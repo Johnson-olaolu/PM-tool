@@ -7,7 +7,7 @@ const LandingPage = () => {
     <>
       <Center className="moneypoint-blue-gradient" h={"100vh"} w={"full"}>
         <Box>
-          <Image src={require("../../assets/monypointlogo.svg").default} margin={"auto"} marginBottom={"10"} />
+          <Image src={require("../../assets/moneypointlogo.svg").default} margin={"auto"} marginBottom={"10"} />
           <Text fontSize={"2xl"} color={"white"} fontWeight={"medium"} textAlign={"center"} marginBottom={16}>
             Log Into your account as
           </Text>

@@ -2,7 +2,7 @@ import { Box, Button, Center, Flex, Image, Text, VStack } from "@chakra-ui/react
 import { useFormik } from "formik";
 import React from "react";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { string } from "yup";
 import CustomInput from "../../components/forms/CustomInput";
 import { authService } from "../../services/auth.service";
@@ -16,13 +16,15 @@ interface IloginValues {
 
 const Login = () => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const initialValues: IloginValues = { email: "", password: "" };
   const formik = useFormik({
     initialValues: initialValues,
     validationSchema: loginValidator,
     onSubmit: async(values) => {
         const response = await authService.login(values.email, values.password)
-        dispatch(userLogin(response.user))
+        //navigate("/project")
+        //dispatch(userLogin(response.user))
     },
   });
   return (
@@ -48,18 +50,22 @@ const Login = () => {
                 label="Email"
                 name="email"
                 onChange={formik.handleChange}
+                onBlur = {formik.handleBlur}
                 placeholder="Enter Email"
                 type="email"
                 value={formik.values.email}
+                errMsg = {formik.touched.email && formik.errors.email ? formik.errors.email  : null}
               />
 
               <CustomInput
                 label="Password"
                 name="password"
                 onChange={formik.handleChange}
+                onBlur = {formik.handleBlur}
                 placeholder="Enter Password"
                 type="password"
                 value={formik.values.password}
+                errMsg = {formik.touched.email && formik.errors.password ? formik.errors.password : null}
               />
             </VStack>
 

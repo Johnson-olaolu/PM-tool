@@ -1,7 +1,7 @@
 import { Box, Button, Flex, Heading, VStack } from "@chakra-ui/react";
 import { AxiosError } from "axios";
 import { useFormik } from "formik";
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { useSelector } from "react-redux";
 import CustomFormFileUpload from "../../components/forms/FormGroup/CustomFormFileUpload";
 import CustomFormInput from "../../components/forms/FormGroup/CustomFormInput";
@@ -11,7 +11,7 @@ import { cloudinaryService } from "../../services/cloudinary.service";
 import { projectService } from "../../services/project.service";
 import { RootState } from "../../store";
 import { projectCategories } from "../../utils/constants";
-import { createProjectValidatorSchema } from "../../utils/validators";
+import { createProjectValidatorSchema, updateProjectValidatorSchema } from "../../utils/validators";
 import StateAndLgas from "../../utils/nigeria-state-and-lgas.json";
 import { useNavigate } from "react-router";
 import { IProject } from "../../interface/project.interface";
@@ -29,12 +29,14 @@ interface ICreateProject {
 }
 
 interface IUpdateProject {
+  setProjectDetails : Dispatch<SetStateAction<IProject | undefined>>
+  setModalOpen : Dispatch<SetStateAction< boolean>>
   projectDetails: IProject;
   name: string;
 }
 
 const UpdateProject: React.FC<IUpdateProject> = (props) => {
-  const { projectDetails, name } = props;
+  const { projectDetails, name, setProjectDetails , setModalOpen} = props;
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.user);
 
@@ -52,14 +54,15 @@ const UpdateProject: React.FC<IUpdateProject> = (props) => {
   
   const formik = useFormik({
     initialValues: initialValues,
-    validationSchema : createProjectValidatorSchema,
+    validationSchema : updateProjectValidatorSchema,
     onSubmit: (values) => {
         projectService.updateSingleProject(projectDetails._id, {
             name : name,
             value : values[name as keyof ICreateProject]
         })
         .then(res => {
-            console.log(res);
+            setProjectDetails(res)
+            setModalOpen(false)
         })
         .catch(err => {
             console.error(err);

@@ -20,7 +20,6 @@ export const createProjectValidatorSchema = yup.object().shape({
 })
 
 export const updateProjectValidatorSchema = yup.object().shape({
-    title: yup.string().required("Please enter title"),
     project_description: yup.string().required("Please enter a project description"),
     project_type: yup.string().required("Please enter project type"),
     renovation_category: yup.string().required("Please select a category"),

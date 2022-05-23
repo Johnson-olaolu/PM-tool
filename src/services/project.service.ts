@@ -45,10 +45,11 @@ const fetchSingleProject = (id: string): Promise<IProject> => {
 };
 
 const updateSingleProject = (project_id: string, payload: { name: string; value: any }) => {
+  const { name, value} = payload
   return axiosService
-    .patch(`https://monie-point.herokuapp.com/api/v1/project/update-project/${project_id}`, payload)
+    .patch(`https://monie-point.herokuapp.com/api/v1/project/update-project/${project_id}`, {[name]: value})
     .then((res) => {
-      return res.data;
+      return res.data.updatedProject;
     })
     .catch((err) => {
       return Promise.reject(err);

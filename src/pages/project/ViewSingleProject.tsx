@@ -88,6 +88,25 @@ const ViewSingleProject = () => {
           </Box>
           <Box>
             <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
+              Amount
+            </Text>
+            <Flex gap={"8px"} alignItems={"center"}>
+              <Text>{projectDetails?.amount}</Text>
+              {isOwner && (
+                <Button
+                  variant={"link"}
+                  color={"moneypoint-blue"}
+                  _focus={{ boxShadow: "none" }}
+                  height={"auto"}
+                  onClick={() => openModal("amount")}
+                >
+                  {<FiEdit fontSize={"16px"} />}
+                </Button>
+              )}
+            </Flex>
+          </Box>
+          <Box>
+            <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
               Project Type
             </Text>
             <Flex gap={"8px"} alignItems={"center"}>
@@ -196,7 +215,7 @@ const ViewSingleProject = () => {
         <ModalContent>
           <ModalHeader>Update Module</ModalHeader>
           <ModalBody>
-            <UpdateProject name={updateName} projectDetails={projectDetails!} />
+            <UpdateProject name={updateName} projectDetails={projectDetails!} setProjectDetails ={setProjectDetails} setModalOpen ={setModalOpen} />
           </ModalBody>
           <ModalFooter></ModalFooter>
         </ModalContent>

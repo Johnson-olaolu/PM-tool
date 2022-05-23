@@ -1,7 +1,21 @@
-import { Box, Button, Flex, Image, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Image,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Stack,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { FiEdit , FiChevronsLeft} from "react-icons/fi";
+import { FiEdit, FiChevronsLeft, FiChevronLeft } from "react-icons/fi";
 import CustomFormFileUpload from "../../components/forms/FormGroup/CustomFormFileUpload";
 import CustomFormInput from "../../components/forms/FormGroup/CustomFormInput";
 import CustomFormSelect from "../../components/forms/FormGroup/CustomFormSelect";
@@ -10,11 +24,11 @@ import { projectService } from "../../services/project.service";
 import UpdateProject from "./UpdateProject";
 
 const ViewSingleProject = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { projectId } = useParams();
   const [projectDetails, setProjectDetails] = useState<IProject>();
-  const [updateName, setUpdateName] = useState("")
-  const [modalOpen, setModalOpen] = useState(false)
+  const [updateName, setUpdateName] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
   const [isOwner, setIsOwner] = useState(true);
 
   const fetchSingleProject = () => {
@@ -30,22 +44,27 @@ const ViewSingleProject = () => {
     fetchSingleProject();
   }, []);
 
-  const openModal = (name : string) => {
-    setUpdateName(name)
-    setModalOpen(true)
-  }
+  const openModal = (name: string) => {
+    setUpdateName(name);
+    setModalOpen(true);
+  };
 
   return (
     <>
       <Box paddingX={"120px"} overflowY={"auto"} paddingBottom={"40px"} paddingTop={"60px"}>
         <Flex marginBottom={"20px"}>
-          <Box>
-              <FiChevronsLeft onClick={() => {navigate(`/project`)} }  />
-             <Text marginLeft={"8px"} color={"blackAlpha.800"} fontWeight={"medium"}>
-            {projectDetails?.title}
-          </Text>
-          </Box>
-         
+          <Flex alignItems={"center"} gap={"20px"}>
+            <FiChevronLeft
+              fontSize={"24px"}
+              onClick={() => {
+                navigate(`/project/all`);
+              }}
+              cursor={"pointer"}
+            />
+            <Text color={"blackAlpha.800"} fontWeight={"medium"} textTransform ={"capitalize"}>
+              {projectDetails?.title}
+            </Text>
+          </Flex>
         </Flex>
         <VStack spacing={"16px"} justify={"start"} align={"start"}>
           <Box>
@@ -55,7 +74,13 @@ const ViewSingleProject = () => {
             <Flex gap={"8px"} alignItems={"center"}>
               <Text>{projectDetails?.project_description}</Text>
               {isOwner && (
-                <Button variant={"link"} color={"moneypoint-blue"} _focus={{ boxShadow: "none" }} height={"auto"} onClick ={() => openModal("project_description")}>
+                <Button
+                  variant={"link"}
+                  color={"moneypoint-blue"}
+                  _focus={{ boxShadow: "none" }}
+                  height={"auto"}
+                  onClick={() => openModal("project_description")}
+                >
                   {<FiEdit fontSize={"16px"} />}
                 </Button>
               )}
@@ -68,7 +93,13 @@ const ViewSingleProject = () => {
             <Flex gap={"8px"} alignItems={"center"}>
               <Text>{projectDetails?.project_type}</Text>
               {isOwner && (
-                <Button variant={"link"} color={"moneypoint-blue"} _focus={{ boxShadow: "none" }} height={"auto"} onClick ={() => openModal("project_type")}>
+                <Button
+                  variant={"link"}
+                  color={"moneypoint-blue"}
+                  _focus={{ boxShadow: "none" }}
+                  height={"auto"}
+                  onClick={() => openModal("project_type")}
+                >
                   {<FiEdit fontSize={"16px"} />}
                 </Button>
               )}
@@ -81,7 +112,13 @@ const ViewSingleProject = () => {
             <Flex gap={"8px"} alignItems={"center"}>
               <Text>{projectDetails?.renovation_category}</Text>
               {isOwner && (
-                <Button variant={"link"} color={"moneypoint-blue"} _focus={{ boxShadow: "none" }} height={"auto"} onClick ={() => openModal("renovation_category")}>
+                <Button
+                  variant={"link"}
+                  color={"moneypoint-blue"}
+                  _focus={{ boxShadow: "none" }}
+                  height={"auto"}
+                  onClick={() => openModal("renovation_category")}
+                >
                   {<FiEdit fontSize={"16px"} />}
                 </Button>
               )}
@@ -94,7 +131,13 @@ const ViewSingleProject = () => {
             <Flex gap={"8px"} alignItems={"center"}>
               <Text>{projectDetails?.office_area_for_renovation}</Text>
               {isOwner && (
-                <Button variant={"link"} color={"moneypoint-blue"} _focus={{ boxShadow: "none" }} height={"auto"} onClick ={() => openModal("office_area_for_renovation")}>
+                <Button
+                  variant={"link"}
+                  color={"moneypoint-blue"}
+                  _focus={{ boxShadow: "none" }}
+                  height={"auto"}
+                  onClick={() => openModal("office_area_for_renovation")}
+                >
                   {<FiEdit fontSize={"16px"} />}
                 </Button>
               )}
@@ -111,7 +154,7 @@ const ViewSingleProject = () => {
                 ))}
               </Stack>
               {isOwner && (
-                <Button variant={"link"} color={"moneypoint-blue"} _focus={{ boxShadow: "none" }} height={"auto"} onClick ={() => openModal("images")}>
+                <Button variant={"link"} color={"moneypoint-blue"} _focus={{ boxShadow: "none" }} height={"auto"} onClick={() => openModal("images")}>
                   {<FiEdit fontSize={"16px"} />}
                 </Button>
               )}
@@ -128,7 +171,13 @@ const ViewSingleProject = () => {
                 ))}
               </Stack>
               {isOwner && (
-                <Button variant={"link"} color={"moneypoint-blue"} _focus={{ boxShadow: "none" }} height={"auto"} onClick ={() => openModal("receipt")}>
+                <Button
+                  variant={"link"}
+                  color={"moneypoint-blue"}
+                  _focus={{ boxShadow: "none" }}
+                  height={"auto"}
+                  onClick={() => openModal("receipt")}
+                >
                   {<FiEdit fontSize={"16px"} />}
                 </Button>
               )}
@@ -137,15 +186,19 @@ const ViewSingleProject = () => {
         </VStack>
       </Box>
 
-      <Modal isOpen={modalOpen} onClose={() => {setModalOpen(false)}}>
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => {
+          setModalOpen(false);
+        }}
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Update Module</ModalHeader>
           <ModalBody>
-            <UpdateProject name={updateName} projectDetails ={projectDetails!} />
+            <UpdateProject name={updateName} projectDetails={projectDetails!} />
           </ModalBody>
-          <ModalFooter>
-          </ModalFooter>
+          <ModalFooter></ModalFooter>
         </ModalContent>
       </Modal>
     </>

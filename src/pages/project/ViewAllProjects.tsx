@@ -6,12 +6,13 @@ import { IProject } from "../../interface/project.interface";
 import { projectService } from "../../services/project.service";
 import { RootState } from "../../store";
 import NumberFormat from "react-number-format";
+import { FiChevronLeft } from "react-icons/fi";
 
 const ViewAllProjects = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.user);
   const [projects, setProjects] = useState<IProject[]>([]);
-  const fetchAllProjects = (state : string) => {
+  const fetchAllProjects = (state: string) => {
     projectService
       .fetchAllProjects(state)
       .then((res) => {
@@ -21,21 +22,30 @@ const ViewAllProjects = () => {
         console.error(err);
       });
   };
-  
+
   useEffect(() => {
     fetchAllProjects(user?.state!);
   }, []);
 
-  const navigateToProject = (id : string) => {
-    navigate(`/project/${id}`)
-  }
+  const navigateToProject = (id: string) => {
+    navigate(`/project/${id}`);
+  };
 
   return (
     <Box paddingX={"120px"} overflowY={"auto"} paddingBottom={"40px"} paddingTop={"60px"}>
-      <Flex marginBottom={"40px"}>
-        <Text color={"blackAlpha.800"} fontWeight={"medium"}>
-          {user?.state} Projects
-        </Text>
+      <Flex marginBottom={"20px"} >
+        <Flex alignItems={"center"} gap={"20px"}>
+          <FiChevronLeft
+            style={{cursor : "pointer"}}
+            fontSize={"24px"}
+            onClick={() => {
+              navigate(`/project`);
+            }}
+          />
+          <Text color={"blackAlpha.800"} fontWeight={"medium"}>
+            {user?.state} State
+          </Text>
+        </Flex>
       </Flex>
       <TableContainer>
         <Table variant="simple" style={{ borderCollapse: "separate", borderSpacing: "0 12px" }}>
@@ -66,14 +76,14 @@ const ViewAllProjects = () => {
           </Thead>
           <Tbody>
             {projects.map((project) => (
-              <Tr backgroundColor={"white"} cursor={"pointer "} borderRadius={"4px"} shadow={"sm"} onClick ={() => navigateToProject(project._id)}>
+              <Tr backgroundColor={"white"} cursor={"pointer "} borderRadius={"4px"} shadow={"sm"} onClick={() => navigateToProject(project._id)}>
                 <Td fontSize={"14px"}>{project.title}</Td>
                 <Td fontSize={"14px"}>{project.project_type}</Td>
                 <Td fontSize={"14px"}>{project.office_area_for_renovation}</Td>
                 <Td fontSize={"14px"}>{project.renovation_category}</Td>
                 <Td fontSize={"14px"}>{project.receipt.length > 0 ? "Uploaded" : ""}</Td>
                 <Td fontSize={"14px"}>
-                <NumberFormat value={project.amount} displayType={"text"} thousandSeparator={true} prefix={"₦"} />
+                  <NumberFormat value={project.amount} displayType={"text"} thousandSeparator={true} prefix={"₦"} />
                 </Td>
                 <Td fontSize={"14px"}>{project.status}</Td>
               </Tr>

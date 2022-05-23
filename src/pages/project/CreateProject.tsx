@@ -1,24 +1,37 @@
-import { Box, Divider, Flex, Heading, HStack, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Divider,
+  Flex,
+  Heading,
+  HStack,
+  Text,
+  VStack,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+} from "@chakra-ui/react";
+import { frost } from "@cloudinary/url-gen/qualifiers/artisticFilter";
+import { AxiosError } from "axios";
 import { useFormik } from "formik";
-import React from "react";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import CustomFormFileUpload from "../../components/forms/FormGroup/CustomFormFileUpload";
 import CustomFormInput from "../../components/forms/FormGroup/CustomFormInput";
 import CustomFormSelect from "../../components/forms/FormGroup/CustomFormSelect";
 import CustomFormTextArea from "../../components/forms/FormGroup/CustomFormTextArea";
+import { cloudinaryService } from "../../services/cloudinary.service";
+import { projectService } from "../../services/project.service";
+import { RootState } from "../../store";
 import { projectCategories } from "../../utils/constants";
+import { createProjectValidatorSchema } from "../../utils/validators";
+import StateAndLgas from "../../utils/nigeria-state-and-lgas.json";
+import { useNavigate } from "react-router";
 
-// data.append('title', 'new project');
-// data.append('project_type', 'Appliances');
-// data.append('renovation_category', 'Electricals');
-// data.append('office_area_for_renovation', 'General');
-// data.append('project_description', 'Full office renovation');
-// data.append('amount', '50000');
-// data.append('images', fs.createReadStream('/C:/Users/pc/Documents/dev_pictures/nails.jpg'));
-// data.append('receipt', fs.createReadStream('/C:/Users/pc/Documents/dev_pictures/ui_design.jpg'));
-// data.append('state', 'Lagos');
-// data.append('address', '86, Allen avenue Ikeja');
-// data.append('images', fs.createReadStream('/C:/Users/pc/Documents/dev_pictures/books.jpg'));
-// data.append('status', 'Pre-approved');
 interface ICreateProject {
   title: string;
   project_type: string;
@@ -30,10 +43,13 @@ interface ICreateProject {
   receipt?: string[];
   state: string;
   address: string;
-  status: string;
 }
 
 const CreateProject = () => {
+  const navigate = useNavigate()
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalDetails, setModalDetails] = useState({title : "", text : "", link : ""})
+  const { user } = useSelector((state: RootState) => state.user);
   const initialValues: ICreateProject = {
     title: "",
     project_description: "",
@@ -41,27 +57,83 @@ const CreateProject = () => {
     renovation_category: "",
     office_area_for_renovation: "",
     amount: "",
-    images : [],
-    receipt : [],
-    state: "",
+    images: [],
+    receipt: [],
+    state: user!?.state,
     address: "",
-    status: "",
   };
   const formik = useFormik({
     initialValues: initialValues,
-    onSubmit: () => {},
+    validationSchema: createProjectValidatorSchema,
+    onSubmit: (values) => {
+      projectService
+        .createNewProject(values)
+        .then((res) => {
+          console.log(res);
+          setModalDetails({
+            title : `new Project ${res.title}`,
+            text : res.project_description,
+            link : res._id
+          })
+          setModalOpen(true)
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
   });
 
   const onSelect = (name: string, value: any) => {
     formik.setFieldValue(name, value);
   };
 
+  const handleSelectImage = (name: string, image: File) => {
+    cloudinaryService
+      .uploadToCloudinary({
+        image: image,
+        upload_preset: "pm_tool",
+        cloud_name: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME!,
+      })
+      .then((data) => {
+        let newImageArray = formik.values[name as keyof ICreateProject] as string[];
+        newImageArray = [...newImageArray, data.url];
+        formik.setFieldValue(name, newImageArray);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleDeleteImage = (name: string, url: string) => {
+    // let public_array = url.split("/");
+    // let public_id = public_array.pop()!;
+    // public_id = public_id.split(".")[0];
+    // // cloudinaryService
+    // //   .deleteFromCloudinary({
+    // //     public_id,
+    // //     cloud_name: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME!,
+    // //     upload_preset: "pm_tool",
+    // //   })
+    // //   .then((data) => {
+    // //     let newImageArray = formik.values[name as keyof ICreateProject] as string[];
+    // //     newImageArray = newImageArray.filter((image) => image !== url);
+    // //     formik.setFieldValue(name, newImageArray);
+    // //   })
+    // //   .catch((err : AxiosError) => {
+    // //     formik.setFieldError(name, ((err.response?.data as any).error.message));
+    // //   });
+    let newImageArray = formik.values[name as keyof ICreateProject] as string[];
+    newImageArray = newImageArray.filter((image) => image !== url);
+    formik.setFieldValue(name, newImageArray);
+  };
+
   return (
-    <Box paddingX={"120px"} overflowY ={"auto"} paddingBottom ={"40px"} paddingTop ={"60px"}>
+    <>
+     <Box paddingX={"120px"} overflowY={"auto"} paddingBottom={"40px"} paddingTop={"60px"}>
       <Heading fontSize={"24px"} color={"blackAlpha.800"} textAlign={"center"} marginBottom={8}>
         Enter Project information
       </Heading>
-      <form>
+      <form onSubmit={formik.handleSubmit}>
         <VStack spacing={"12px"} maxWidth={"500px"} margin={"0 auto"}>
           <CustomFormInput
             name="title"
@@ -101,7 +173,9 @@ const CreateProject = () => {
             placeholder="Enter the office area for renovation"
             required={true}
             value={formik.values.office_area_for_renovation}
-            errMsg={formik.errors.office_area_for_renovation && formik.touched.office_area_for_renovation ? formik.errors.office_area_for_renovation : null}
+            errMsg={
+              formik.errors.office_area_for_renovation && formik.touched.office_area_for_renovation ? formik.errors.office_area_for_renovation : null
+            }
           />
           <CustomFormTextArea
             name="project_description"
@@ -121,19 +195,71 @@ const CreateProject = () => {
             value={formik.values.amount}
             errMsg={formik.errors.amount && formik.touched.amount ? formik.errors.amount : null}
           />
-          <CustomFormFileUpload
-            name="image"
-            title="Upload Images"
-            text="Images of office supplies to be bought or changed, if available"
+          <CustomFormSelect
+            name="state"
+            data={StateAndLgas.sort((a, b) => a.state < b.state ? -1 : 1).map((state) => ({ name: state.state, value: state.state }))}
+            onSelect={onSelect}
+            placeholder="Select State"
+            required={true}
+            value={formik.values.state}
+            errMsg={formik.errors.state && formik.touched.state ? formik.errors.state : null}
+            onBlur={formik.handleBlur}
+          />
+          <CustomFormInput
+            name="address"
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            placeholder="Address"
+            required={true}
+            value={formik.values.address}
+            errMsg={formik.errors.address && formik.touched.address ? formik.errors.address : null}
           />
           <CustomFormFileUpload
-            name="reciepts"
+            name="images"
+            title="Upload Images"
+            handleSelectImage={handleSelectImage}
+            handleDeleteImage={handleDeleteImage}
+            handleBlur={formik.handleBlur}
+            value={formik.values.images!}
+            text="Images of office supplies to be bought or changed, if available"
+            errMsg={formik.errors.images && formik.touched.images ? formik.errors.images : null}
+            required={false}
+          />
+          <CustomFormFileUpload
+            name="receipt"
             title="Upload Reciept"
             text="Is this an official receipt? If not, you would need to send a mail with tthe official receipt within 1 week of payment"
+            handleDeleteImage={handleDeleteImage}
+            handleSelectImage={handleSelectImage}
+            handleBlur={formik.handleBlur}
+            value={formik.values.receipt!}
+            errMsg={formik.errors.amount && formik.touched.amount ? formik.errors.amount : null}
+            required={false}
           />
+          <Flex justifyContent={"end"} width={"100%"}>
+            <Button type="submit" padding={"12px 40px"} color={"white"} bg={"moneypoint-blue"} fontSize={"sm"} colorScheme={"moneypoint-blue"}>
+              Submit
+            </Button>
+          </Flex>
         </VStack>
       </form>
     </Box>
+    <Modal isOpen={modalOpen} onClose={() => {setModalOpen(false)}}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{modalDetails.title}</ModalHeader>
+          <ModalBody>
+            <Text>{modalDetails.text}</Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button color={"white"} bg={"moneypoint-blue"} fontSize={"sm"} colorScheme={"moneypoint-blue"} onClick={() => {navigate(`/project/${modalDetails.link}`)}}>
+              View Project
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
+   
   );
 };
 

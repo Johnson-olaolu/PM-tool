@@ -3,7 +3,7 @@ import React from 'react'
 
 const Header = () => {
   return (
-    <Box borderTop={" 4px solid"} borderColor ={"moneypoint-blue"} bg ={"white"} shadow ={"md"} paddingX ={"120px"}>
+    <Box position={"relative"} zIndex={5} borderTop={" 4px solid"} borderColor ={"moneypoint-blue"} bg ={"white"} shadow ={"md"} paddingX ={"120px"}>
         <Flex  height={"60px"} alignItems = {"center"}>
                 <Text fontSize={"sm"} color ={"blackAlpha.800"}> <strong>State:</strong> Lagos</Text>
                 <Spacer/>

@@ -7,7 +7,7 @@ const userSlice = createSlice({
 	name: "user",
 	initialState: {
 		user:null ,
-	} as { user : { user : IUser }  | null},
+	} as { user : IUser | null},
 	reducers: {
 		userLogin: (state, action) => {
 			state.user = action.payload;

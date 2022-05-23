@@ -3,7 +3,6 @@ import { useFormik } from "formik";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { string } from "yup";
 import CustomInput from "../../components/forms/CustomInput";
 import { authService } from "../../services/auth.service";
 import { userLogin } from "../../store/userStore";
@@ -22,9 +21,11 @@ const Login = () => {
     initialValues: initialValues,
     validationSchema: loginValidator,
     onSubmit: async(values) => {
-        const response = await authService.login(values.email, values.password)
-        //navigate("/project")
-        //dispatch(userLogin(response.user))
+        const response = await authService.login(values.email, values.password)  
+        dispatch(userLogin(response.user))
+        setTimeout(() => {
+          navigate("/project")
+        }, 300) 
     },
   });
   return (

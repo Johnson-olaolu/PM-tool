@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 import { FiChevronDown } from "react-icons/fi";
-import { Box, Text } from "@chakra-ui/react";
 const MCustomSelect = styled.div`
 width: 100%;
   .custom-select {
@@ -41,6 +40,8 @@ width: 100%;
       left: 0;
       width: 100%;
       list-style: none;
+      max-height: 200px;
+      overflow-y: auto;
       box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
       span {
         display : block;
@@ -87,7 +88,6 @@ const CustomFormSelect: React.FC<IMCustumFormGroupSelect> = (props) => {
   const { data, required, name, onSelect, placeholder, value, errMsg, onBlur } = props;
   const dropdownRef = useRef<HTMLUListElement>(null);
   const selectRef = useRef<HTMLDivElement>(null);
-  console.log(data)
   const toggleDropdown = () => {
     if (dropdownRef.current?.style.display === "none") {
       dropdownRef.current.style.display = "block";
@@ -115,8 +115,8 @@ const CustomFormSelect: React.FC<IMCustumFormGroupSelect> = (props) => {
   };
 
   return (
-    <MCustomSelect onBlur={onBlur} id ={name}>
-      <div className="custom-select" ref={selectRef}  tabIndex={0}>
+    <MCustomSelect >
+      <div className="custom-select" ref={selectRef}  tabIndex={0} onBlur={onBlur} id ={name}>
         <div className="" onClick={toggleDropdown}>
         <p className = {!!value && data ? "select-active" : "select-inactive"}>{!!value && data ? data?.find((d) => d.value === value)!?.name : placeholder}</p>
         <FiChevronDown fontSize={24} color={"#B4CBD5"} />

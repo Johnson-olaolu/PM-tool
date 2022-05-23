@@ -39,6 +39,7 @@ const UpdateProject: React.FC<IUpdateProject> = (props) => {
   const { projectDetails, name, setProjectDetails , setModalOpen} = props;
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.user);
+  const [isLoading, setIsLoading] = useState(false)
 
   const initialValues: ICreateProject = {
     project_description: projectDetails.project_description,
@@ -56,6 +57,7 @@ const UpdateProject: React.FC<IUpdateProject> = (props) => {
     initialValues: initialValues,
     validationSchema : updateProjectValidatorSchema,
     onSubmit: (values) => {
+      setIsLoading(true)
         projectService.updateSingleProject(projectDetails._id, {
             name : name,
             value : values[name as keyof ICreateProject]
@@ -67,7 +69,9 @@ const UpdateProject: React.FC<IUpdateProject> = (props) => {
         .catch(err => {
             console.error(err);
         })
+        setIsLoading(false)
     },
+    
   });
 
   const onSelect = (name: string, value: any) => {
@@ -237,7 +241,7 @@ const UpdateProject: React.FC<IUpdateProject> = (props) => {
           )}
 
           <Flex justifyContent={"end"} width={"100%"} marginTop={"20px"}>
-            <Button type="submit" padding={"12px 40px"} color={"white"} bg={"moneypoint-blue"} fontSize={"sm"} colorScheme={"moneypoint-blue"}>
+            <Button type="submit" padding={"12px 40px"} color={"white"} bg={"moneypoint-blue"} fontSize={"sm"} colorScheme={"moneypoint-blue"} isLoading = {isLoading}>
               Update
             </Button>
           </Flex>

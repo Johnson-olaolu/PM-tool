@@ -49,6 +49,7 @@ const CreateProject = () => {
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalDetails, setModalDetails] = useState({ title: "", text: "", link: "" });
+  const [isLoading, setIsLoading] = useState(false)
   const { user } = useSelector((state: RootState) => state.user);
   const initialValues: ICreateProject = {
     title: "",
@@ -66,6 +67,7 @@ const CreateProject = () => {
     initialValues: initialValues,
     validationSchema: createProjectValidatorSchema,
     onSubmit: (values) => {
+      setIsLoading(true)
       projectService
         .createNewProject(values)
         .then((res) => {
@@ -80,6 +82,7 @@ const CreateProject = () => {
         .catch((err) => {
           console.error(err);
         });
+      setIsLoading(false)
     },
   });
 
@@ -221,7 +224,7 @@ const CreateProject = () => {
               name="address"
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
-              placeholder="Address"
+              placeholder="Vendor"
               required={true}
               value={formik.values.address}
               errMsg={formik.errors.address && formik.touched.address ? formik.errors.address : null}
@@ -249,7 +252,7 @@ const CreateProject = () => {
               required={false}
             />
             <Flex justifyContent={"end"} width={"100%"}>
-              <Button type="submit" padding={"12px 40px"} color={"white"} bg={"moneypoint-blue"} fontSize={"sm"} colorScheme={"moneypoint-blue"}>
+              <Button type="submit" padding={"12px 40px"} color={"white"} bg={"moneypoint-blue"} fontSize={"sm"} colorScheme={"moneypoint-blue"} isLoading ={isLoading}>
                 Submit
               </Button>
             </Flex>

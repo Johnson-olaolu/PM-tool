@@ -54,7 +54,7 @@ const ViewAllProjects = () => {
               <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
                 Title
               </Th>
-              <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
+              {/* <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
                 Category
               </Th>
               <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
@@ -62,6 +62,12 @@ const ViewAllProjects = () => {
               </Th>
               <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
                 More Information
+              </Th> */}
+              <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
+                Product Description
+              </Th>
+              <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
+                Vendor
               </Th>
               <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
                 Invoice
@@ -77,10 +83,18 @@ const ViewAllProjects = () => {
           <Tbody>
             {projects.map((project) => (
               <Tr backgroundColor={"white"} cursor={"pointer "} borderRadius={"4px"} shadow={"sm"} onClick={() => navigateToProject(project._id)}>
-                <Td fontSize={"14px"}>{project.title}</Td>
-                <Td fontSize={"14px"}>{project.project_type}</Td>
-                <Td fontSize={"14px"}>{project.office_area_for_renovation}</Td>
-                <Td fontSize={"14px"}>{project.renovation_category}</Td>
+                <Td fontSize={"14px"} maxW={"200px"} overflowX ={"hidden"} textOverflow={"ellipsis"} title={project.title}>
+                  <Text>
+                    {project.title}
+                  </Text>
+                  </Td>
+                {/* <Td fontSize={"14px"}>{project.project_type}</Td> */}
+                {/* <Td fontSize={"14px"}>{project.office_area_for_renovation}</Td> */}
+                {/* <Td fontSize={"14px"}>{project.renovation_category}</Td> */}
+                <Td fontSize={"14px"}>
+                  <Text maxW={"400px"} overflowX ={"hidden"} textOverflow={"ellipsis"} title={project.project_description}>{project.project_description}</Text>
+                  </Td>
+                <Td fontSize={"14px"}>{project.address}</Td>
                 <Td fontSize={"14px"}>{project.receipt.length > 0 ? "Uploaded" : ""}</Td>
                 <Td fontSize={"14px"}>
                   <NumberFormat value={project.amount} displayType={"text"} thousandSeparator={true} prefix={"₦"} />
@@ -89,6 +103,7 @@ const ViewAllProjects = () => {
               </Tr>
             ))}
           </Tbody>
+          <TableCaption> Total Amount :{projects.reduce((a , b) =>  b.amount + a, 0) }</TableCaption>
         </Table>
       </TableContainer>
     </Box>

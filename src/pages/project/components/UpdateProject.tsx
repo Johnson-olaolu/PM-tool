@@ -3,18 +3,18 @@ import { AxiosError } from "axios";
 import { useFormik } from "formik";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { useSelector } from "react-redux";
-import CustomFormFileUpload from "../../components/forms/FormGroup/CustomFormFileUpload";
-import CustomFormInput from "../../components/forms/FormGroup/CustomFormInput";
-import CustomFormSelect from "../../components/forms/FormGroup/CustomFormSelect";
-import CustomFormTextArea from "../../components/forms/FormGroup/CustomFormTextArea";
-import { cloudinaryService } from "../../services/cloudinary.service";
-import { projectService } from "../../services/project.service";
-import { RootState } from "../../store";
-import { projectCategories } from "../../utils/constants";
-import { createProjectValidatorSchema, updateProjectValidatorSchema } from "../../utils/validators";
-import StateAndLgas from "../../utils/nigeria-state-and-lgas.json";
+import CustomFormFileUpload from "../../../components/forms/FormGroup/CustomFormFileUpload";
+import CustomFormInput from "../../../components/forms/FormGroup/CustomFormInput";
+import CustomFormSelect from "../../../components/forms/FormGroup/CustomFormSelect";
+import CustomFormTextArea from "../../../components/forms/FormGroup/CustomFormTextArea";
+import { cloudinaryService } from "../../../services/cloudinary.service";
+import { projectService } from "../../../services/project.service";
+import { RootState } from "../../../store";
+import { projectCategories } from "../../../utils/constants";
+import { createProjectValidatorSchema, updateProjectValidatorSchema } from "../../../utils/validators";
+import StateAndLgas from "../../../utils/nigeria-state-and-lgas.json";
 import { useNavigate } from "react-router";
-import { IProject } from "../../interface/project.interface";
+import { IProject } from "../../../interface/project.interface";
 
 interface ICreateProject {
   project_type: string;
@@ -50,7 +50,7 @@ const UpdateProject: React.FC<IUpdateProject> = (props) => {
     images: projectDetails.images,
     receipt: projectDetails.receipt,
     state: projectDetails.state,
-    address: projectDetails.address,
+    address: projectDetails.vendor,
   };
   
   const formik = useFormik({
@@ -154,6 +154,7 @@ const UpdateProject: React.FC<IUpdateProject> = (props) => {
               onChange={formik.handleChange}
               placeholder="Enter the office area for renovation"
               required={false}
+              type = "text"
               value={formik.values.office_area_for_renovation}
               errMsg={
                 formik.errors.office_area_for_renovation && formik.touched.office_area_for_renovation
@@ -182,6 +183,7 @@ const UpdateProject: React.FC<IUpdateProject> = (props) => {
               onChange={formik.handleChange}
               placeholder="Amount"
               required={false}
+              type = "amount"
               value={formik.values.amount}
               errMsg={formik.errors.amount && formik.touched.amount ? formik.errors.amount : null}
             />
@@ -207,6 +209,7 @@ const UpdateProject: React.FC<IUpdateProject> = (props) => {
               onChange={formik.handleChange}
               placeholder="Address"
               required={false}
+              type = "text"
               value={formik.values.address}
               errMsg={formik.errors.address && formik.touched.address ? formik.errors.address : null}
             />

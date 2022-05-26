@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router'
 import ProjectDashboard from './ProjectDashboard'
 import ViewAllProjects from './ViewAllProjects'
 import ViewSingleProject from './ViewSingleProject'
+import ViewSingleProjectAdmin from './admin/ViewSIngleProjectAdmin'
 const CreateProject = React.lazy(() => import('./CreateProject'))
 
 const ProjectRoutes = () => {
@@ -13,6 +14,11 @@ const ProjectRoutes = () => {
             <Route path='/all' element ={<ViewAllProjects/>}/>
             <Route path='/create' element ={<CreateProject/>}/>
             <Route path='/:projectId' element = {<ViewSingleProject/>}/>
+
+            {/* admin routes */}
+            <Route path='/admin/all' element ={<ViewAllProjects/>}/>
+            <Route path='/admin/:projectId' element = {<ViewSingleProjectAdmin/>}/>
+
             <Route path='/*' element = {<Navigate to={"/404"}/>} />
         </Routes>
     </>

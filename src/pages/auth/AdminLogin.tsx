@@ -13,7 +13,7 @@ interface IloginValues {
   password: string;
 }
 
-const Login = () => {
+const AdminLogin = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const initialValues: IloginValues = { email: "", password: "" };
@@ -26,7 +26,7 @@ const Login = () => {
         const response = await authService.login(values.email, values.password)  
         dispatch(userLogin(response.user))
         setTimeout(() => {
-          navigate("/project")
+          navigate("/project/admin/all")
         }, 300) 
         setIsLoading(false)
     },
@@ -86,4 +86,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default AdminLogin;

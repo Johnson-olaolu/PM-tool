@@ -11,7 +11,7 @@ const createNewProject = (payload: {
   images?: string[];
   receipt?: string[];
   state: string;
-  address: string;
+  vendor: string;
 }): Promise<IProject> => {
   return axiosService
     .post(`project/create-project`, payload)
@@ -27,7 +27,7 @@ const fetchAllProjects = (state?: string, status?: string, payment_status?: stri
   return axiosService
     .get(`project/get-all-projects?state=${state ? state : ""}&status=${status ? status : ""}&payment_status=${payment_status ? payment_status : ""}`)
     .then((res) => {
-      return res.data.project;
+      return res.data.projects;
     })
     .catch((err) => {
       return Promise.reject(err);

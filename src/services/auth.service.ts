@@ -11,8 +11,11 @@ const login = (email : string, password : string) => {
         return Promise.reject(err)
     }) 
 }
-
+const logout  = () => {
+    localStorage.removeItem("token")
+}
 
 export const authService = {
-    login
+    login,
+    logout
 }

@@ -10,3 +10,11 @@ export const projectCategories : IProjectCategories[] = [
     subCategories: ["Operations", "State office requests", "Branding"],
   },
 ];
+
+
+export enum userTypes {
+  STATE_COORDINATOR = "State-Coordinator",
+  ADMIN = "Admin",
+  SENIOR_ADMIN ="Senior-Admin",
+  FINANCE = "Finance"
+}

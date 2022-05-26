@@ -11,6 +11,7 @@ export const createProjectValidatorSchema = yup.object().shape({
     project_type: yup.string().required("Please enter project type"),
     renovation_category: yup.string().required("Please select a category"),
     office_area_for_renovation: yup.string().required("Please enter a renovation area"),
+    inventory : yup.array().required("Please add Inventory"),
     amount: yup.number().required("Please enter amount"),
     images : yup.array(),
     receipt : yup.array(),
@@ -30,4 +31,10 @@ export const updateProjectValidatorSchema = yup.object().shape({
     state: yup.string().required("Please Enter a state"),
     address: yup.string().required("Please Enter an address"),
     // status: yup.string().required("Please select a state"),
+})
+
+export const createInventoryValidatorSchema = yup.object().shape({
+    name : yup.string().required("Pleas enter a name"),
+    amount : yup.number().min(1, "Amount must me more than 0"),
+    price : yup.number().min(10,"Price mor be more than 10")
 })

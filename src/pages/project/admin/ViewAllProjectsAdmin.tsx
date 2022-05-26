@@ -2,9 +2,9 @@ import { Box, Flex, Table, Thead, Tbody, Tfoot, Tr, Th, Td, TableCaption, TableC
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
-import { IProject } from "../../interface/project.interface";
-import { projectService } from "../../services/project.service";
-import { RootState } from "../../store";
+import { IProject } from "../../../interface/project.interface";
+import { projectService } from "../../../services/project.service";
+import { RootState } from "../../../store";
 import NumberFormat from "react-number-format";
 import { FiChevronLeft } from "react-icons/fi";
 
@@ -54,15 +54,6 @@ const ViewAllProjects = () => {
               <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
                 Title
               </Th>
-              {/* <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
-                Category
-              </Th>
-              <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
-                Office area
-              </Th>
-              <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
-                More Information
-              </Th> */}
               <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
                 Product Description
               </Th>
@@ -88,9 +79,6 @@ const ViewAllProjects = () => {
                   <Td fontSize={"14px"} >
                     <Text maxW={"200px"} overflowX={"hidden"} textOverflow={"ellipsis"} title={project.title}>{project.title}</Text>
                   </Td>
-                  {/* <Td fontSize={"14px"}>{project.project_type}</Td> */}
-                  {/* <Td fontSize={"14px"}>{project.office_area_for_renovation}</Td> */}
-                  {/* <Td fontSize={"14px"}>{project.renovation_category}</Td> */}
                   <Td fontSize={"14px"}>
                     <Text maxW={"400px"} overflowX={"hidden"} textOverflow={"ellipsis"} title={project.project_description}>
                       {project.project_description}
@@ -106,7 +94,6 @@ const ViewAllProjects = () => {
               ))}
           </Tbody>
           <TableCaption>
-            {" "}
             Total Amount :{" "}
             <NumberFormat value={projects.reduce((a, b) => b.amount + a, 0).toString() } displayType={"text"} thousandSeparator={true} prefix={"₦"} />
           </TableCaption>

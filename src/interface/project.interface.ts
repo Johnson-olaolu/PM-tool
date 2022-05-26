@@ -1,5 +1,5 @@
 export interface IProject {
-  address: string;
+  vendor: string;
   amount: number;
   comment: string;
   createdAt: Date;
@@ -9,6 +9,7 @@ export interface IProject {
   project_description: string;
   project_type: string;
   receipt: [];
+  inventory : IInventory[]
   renovation_category: string;
   state: string;
   state_coordinator: string;
@@ -17,4 +18,10 @@ export interface IProject {
   updatedAt: Date;
   __v: 0;
   _id: string;
+}
+
+export interface IInventory {
+  name : string
+  amount : number
+  price : number
 }

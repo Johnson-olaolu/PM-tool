@@ -14,6 +14,11 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  FormLabel,
+  TableContainer,
+  Table,
+  Tr,
+  Td,
 } from "@chakra-ui/react";
 import { AxiosError } from "axios";
 import { useFormik } from "formik";
@@ -27,10 +32,12 @@ import { cloudinaryService } from "../../services/cloudinary.service";
 import { projectService } from "../../services/project.service";
 import { RootState } from "../../store";
 import { projectCategories } from "../../utils/constants";
-import { createProjectValidatorSchema } from "../../utils/validators";
-import StateAndLgas from "../../utils/nigeria-state-and-lgas.json";
+import { createInventoryValidatorSchema, createProjectValidatorSchema } from "../../utils/validators";
 import { useNavigate } from "react-router";
-import { FiChevronLeft, FiChevronsLeft } from "react-icons/fi";
+import { FiChevronLeft, } from "react-icons/fi";
+import { IInventory } from "../../interface/project.interface";
+import { FaTrash } from "react-icons/fa";
+import NumberFormat from "react-number-format";
 
 interface ICreateProject {
   title: string;
@@ -38,18 +45,19 @@ interface ICreateProject {
   renovation_category: string;
   office_area_for_renovation: string;
   project_description: string;
+  inventory: IInventory[];
   amount: string;
   images?: string[];
   receipt?: string[];
   state: string;
-  address: string;
+  vendor: string;
 }
 
 const CreateProject = () => {
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalDetails, setModalDetails] = useState({ title: "", text: "", link: "" });
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const { user } = useSelector((state: RootState) => state.user);
   const initialValues: ICreateProject = {
     title: "",
@@ -58,16 +66,17 @@ const CreateProject = () => {
     renovation_category: "",
     office_area_for_renovation: "",
     amount: "",
+    inventory: [],
     images: [],
     receipt: [],
     state: user!?.state,
-    address: "",
+    vendor: "",
   };
   const formik = useFormik({
     initialValues: initialValues,
     validationSchema: createProjectValidatorSchema,
     onSubmit: (values) => {
-      setIsLoading(true)
+      setIsLoading(true);
       projectService
         .createNewProject(values)
         .then((res) => {
@@ -82,10 +91,26 @@ const CreateProject = () => {
         .catch((err) => {
           console.error(err);
         });
-      setIsLoading(false)
+      setIsLoading(false);
     },
   });
 
+  const inventoryInitialvalues: IInventory = { amount: 0, name: "", price: 0 };
+  const inventoryFormik = useFormik({
+    validationSchema : createInventoryValidatorSchema,
+    initialValues: inventoryInitialvalues,
+    onSubmit: (values) => {
+      const currentInventory = formik.values.inventory
+      console.log(values);
+      currentInventory.push({
+        name : values.name,
+        amount : values.amount,
+        price : values.price
+      })
+      //formik.setFieldValue("inventory", currentInventory)
+      inventoryFormik.resetForm()
+    },
+  });
   const onSelect = (name: string, value: any) => {
     formik.setFieldValue(name, value);
   };
@@ -130,10 +155,14 @@ const CreateProject = () => {
     formik.setFieldValue(name, newImageArray);
   };
 
+  const handleRemoveInventory  = (item : IInventory) => {
+    const newIventoryArray = formik.values.inventory.filter((inv) => inv !== item)
+    formik.setFieldValue("inventory", newIventoryArray)
+  }
   return (
     <>
       <Box paddingX={"120px"} overflowY={"auto"} paddingBottom={"40px"} paddingTop={"60px"}>
-        <Flex  alignItems ="center" marginBottom={8}>
+        <Flex alignItems="center" marginBottom={8}>
           <FiChevronLeft
             cursor={"pointer"}
             fontSize={"24px"}
@@ -141,7 +170,7 @@ const CreateProject = () => {
               navigate(`/project`);
             }}
           />
-          <Heading fontSize={"24px"} color={"blackAlpha.800"} textAlign={"center"}  flexGrow ={1}>
+          <Heading fontSize={"24px"} color={"blackAlpha.800"} textAlign={"center"} flexGrow={1}>
             Enter Project information
           </Heading>
         </Flex>
@@ -154,6 +183,7 @@ const CreateProject = () => {
               onChange={formik.handleChange}
               placeholder="Title/Summary"
               required={true}
+              type = "text"
               value={formik.values.title}
               errMsg={formik.errors.title && formik.touched.title ? formik.errors.title : null}
             />
@@ -185,6 +215,7 @@ const CreateProject = () => {
               onChange={formik.handleChange}
               placeholder="Enter the office area for renovation"
               required={true}
+              type = "text"
               value={formik.values.office_area_for_renovation}
               errMsg={
                 formik.errors.office_area_for_renovation && formik.touched.office_area_for_renovation
@@ -207,10 +238,11 @@ const CreateProject = () => {
               onChange={formik.handleChange}
               placeholder="Amount"
               required={true}
+              type = "amount"
               value={formik.values.amount}
               errMsg={formik.errors.amount && formik.touched.amount ? formik.errors.amount : null}
             />
-            <CustomFormSelect
+            {/* <CustomFormSelect
               name="state"
               data={StateAndLgas.sort((a, b) => (a.state < b.state ? -1 : 1)).map((state) => ({ name: state.state, value: state.state }))}
               onSelect={onSelect}
@@ -219,15 +251,83 @@ const CreateProject = () => {
               value={formik.values.state}
               errMsg={formik.errors.state && formik.touched.state ? formik.errors.state : null}
               onBlur={formik.handleBlur}
-            />
+            /> */}
+            <Box width={"100%"} border={"solid 2px"} borderColor={"moneypoint-blue"} padding ={"16px"}borderRadius ={"4px"}>
+              <Heading fontWeight={"bold"} fontSize={"16px"} color ={"blackAlpha.800"} marginBottom ={"16px"} >Add Inventory</Heading>
+              <TableContainer marginBottom={"20px"}>
+                <Table variant="simple" style={{ borderCollapse: "separate", borderSpacing: "0 12px" }}>
+                  {formik.values.inventory.map((inv) => (
+                    <Tr backgroundColor={"white"} cursor={"pointer "} borderRadius={"4px"} shadow={"sm"}>
+                      <Td fontSize={"12px"}>
+                        Name: <strong>{inv.name}</strong>
+                      </Td>
+                      <Td fontSize={"12px"}>
+                        Amount: <strong>{inv.amount}</strong>
+                      </Td>
+                      <Td fontSize={"12px"}>
+                        Price: <strong> <NumberFormat value={inv.price} thousandSeparator={true} prefix={'₦'} displayType ={"text"}/></strong>
+                      </Td>
+                      <Td fontSize={"12px"}>
+                        <FaTrash color="red" onClick={()=> handleRemoveInventory(inv)}/>
+                      </Td>
+                    </Tr>
+                  ))}
+                </Table>
+              </TableContainer>
+
+                <VStack spacing={"12px"} alignItems={"start"}>
+                  <CustomFormInput
+                    name="name"
+                    onBlur={inventoryFormik.handleBlur}
+                    onChange={inventoryFormik.handleChange}
+                    placeholder="Item Name"
+                    required={true}
+                    type = "text"
+                    value={inventoryFormik.values.name}
+                    errMsg={inventoryFormik.errors.name && inventoryFormik.touched.name ? inventoryFormik.errors.name : null}
+                  />
+                  <CustomFormInput
+                    name="amount"
+                    onBlur={inventoryFormik.handleBlur}
+                    onChange={inventoryFormik.handleChange}
+                    placeholder="Item Amount"
+                    required={true}
+                    type = "number"
+                    value={inventoryFormik.values.amount}
+                    errMsg={inventoryFormik.errors.amount && inventoryFormik.touched.amount ? inventoryFormik.errors.amount : null}
+                  />
+                  <CustomFormInput
+                    name="price"
+                    onBlur={inventoryFormik.handleBlur}
+                    onChange={inventoryFormik.handleChange}
+                    placeholder="Item Price"
+                    required={true}
+                    type = "amount"
+                    value={inventoryFormik.values.price}
+                    errMsg={inventoryFormik.errors.price && inventoryFormik.touched.price ? inventoryFormik.errors.price : null}
+                  />
+                  <Button
+                  
+                    padding={"12px 40px"}
+                    color={"white"}
+                    bg={"moneypoint-blue"}
+                    fontSize={"sm"}
+                    colorScheme={"moneypoint-blue"}
+                    onClick ={(e) => inventoryFormik.handleSubmit()}
+                  >
+                    Add Inventory Item
+                  </Button>
+                </VStack>
+            </Box>
             <CustomFormInput
-              name="address"
+              name="vendor"
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
               placeholder="Vendor"
               required={true}
-              value={formik.values.address}
-              errMsg={formik.errors.address && formik.touched.address ? formik.errors.address : null}
+              type = "text"
+              value={formik.values.vendor}
+              errMsg={formik.errors.vendor && formik.touched.vendor ? formik.errors.vendor : null}
             />
             <CustomFormFileUpload
               name="images"
@@ -252,7 +352,15 @@ const CreateProject = () => {
               required={false}
             />
             <Flex justifyContent={"end"} width={"100%"}>
-              <Button type="submit" padding={"12px 40px"} color={"white"} bg={"moneypoint-blue"} fontSize={"sm"} colorScheme={"moneypoint-blue"} isLoading ={isLoading}>
+              <Button
+                type="submit"
+                padding={"12px 40px"}
+                color={"white"}
+                bg={"moneypoint-blue"}
+                fontSize={"sm"}
+                colorScheme={"moneypoint-blue"}
+                isLoading={isLoading}
+              >
                 Submit
               </Button>
             </Flex>

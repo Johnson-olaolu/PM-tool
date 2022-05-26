@@ -16,20 +16,21 @@ import {
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { FiEdit, FiChevronsLeft, FiChevronLeft } from "react-icons/fi";
-import CustomFormFileUpload from "../../components/forms/FormGroup/CustomFormFileUpload";
-import CustomFormInput from "../../components/forms/FormGroup/CustomFormInput";
-import CustomFormSelect from "../../components/forms/FormGroup/CustomFormSelect";
 import { IProject } from "../../interface/project.interface";
 import { projectService } from "../../services/project.service";
-import UpdateProject from "./UpdateProject";
+import UpdateProject from "./components/UpdateProject";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
 
 const ViewSingleProject = () => {
   const navigate = useNavigate();
   const { projectId } = useParams();
   const [projectDetails, setProjectDetails] = useState<IProject>();
+  const { user } = useSelector((state: RootState) => state.user);
   const [updateName, setUpdateName] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const [isOwner, setIsOwner] = useState(true);
+  const [isOwner, setIsOwner] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const fetchSingleProject = () => {
     projectService
@@ -43,6 +44,15 @@ const ViewSingleProject = () => {
   useEffect(() => {
     fetchSingleProject();
   }, []);
+
+  useEffect(() => {
+    if (user?.user_type === "State-Coordinator") {
+      setIsOwner(true);
+    }
+    if (user?.user_type) {
+      setIsAdmin(true);
+    }
+  }, [user]);
 
   const openModal = (name: string) => {
     setUpdateName(name);
@@ -61,7 +71,7 @@ const ViewSingleProject = () => {
               }}
               cursor={"pointer"}
             />
-            <Text color={"blackAlpha.800"} fontWeight={"medium"} textTransform ={"capitalize"}>
+            <Text color={"blackAlpha.800"} fontWeight={"medium"} textTransform={"capitalize"}>
               {projectDetails?.title}
             </Text>
           </Flex>
@@ -93,13 +103,7 @@ const ViewSingleProject = () => {
             <Flex gap={"8px"} alignItems={"center"}>
               <Text>{projectDetails?.amount}</Text>
               {isOwner && (
-                <Button
-                  variant={"link"}
-                  color={"moneypoint-blue"}
-                  _focus={{ boxShadow: "none" }}
-                  height={"auto"}
-                  onClick={() => openModal("amount")}
-                >
+                <Button variant={"link"} color={"moneypoint-blue"} _focus={{ boxShadow: "none" }} height={"auto"} onClick={() => openModal("amount")}>
                   {<FiEdit fontSize={"16px"} />}
                 </Button>
               )}
@@ -202,9 +206,32 @@ const ViewSingleProject = () => {
               )}
             </Flex>
           </Box>
+          {isAdmin && (
+            <Flex paddingTop={"40px"} gap={"40px"}>
+               <Button
+                padding={"12px 40px"}
+                color={"white"}
+                bg={"moneypoint-red"}
+                fontSize={"sm"}
+                colorScheme={"moneypoint-red"}
+              >
+                Reject
+              </Button>
+              <Button
+                padding={"12px 40px"}
+                color={"white"}
+                bg={"moneypoint-blue"}
+                fontSize={"sm"}
+                colorScheme={"moneypoint-blue"}
+              >
+               Approve
+              </Button>
+            </Flex>
+          )}
         </VStack>
       </Box>
 
+      {/* Update Modal */}
       <Modal
         isOpen={modalOpen}
         onClose={() => {
@@ -215,7 +242,7 @@ const ViewSingleProject = () => {
         <ModalContent>
           <ModalHeader>Update Module</ModalHeader>
           <ModalBody>
-            <UpdateProject name={updateName} projectDetails={projectDetails!} setProjectDetails ={setProjectDetails} setModalOpen ={setModalOpen} />
+            <UpdateProject name={updateName} projectDetails={projectDetails!} setProjectDetails={setProjectDetails} setModalOpen={setModalOpen} />
           </ModalBody>
           <ModalFooter></ModalFooter>
         </ModalContent>

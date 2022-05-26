@@ -1,14 +1,16 @@
 import React, { ChangeEvent } from "react";
+import NumberFormat from "react-number-format";
 import styled from "styled-components";
 
 interface ICustomFormInput {
   placeholder: string;
-  value: string;
+  value: string | number;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onBlur: (e: ChangeEvent<HTMLInputElement>) => void;
   name: string;
   errMsg?: string | null;
   required: boolean;
+  type : string
 }
 
 const MCustomFormInput = styled.div`
@@ -41,11 +43,16 @@ const MCustomFormInput = styled.div`
 `;
 
 const CustomFormInput: React.FC<ICustomFormInput> = (props) => {
-  const { name, onBlur, onChange, placeholder, value, errMsg, required } = props;
+  const { name, onBlur, onChange, placeholder, value, errMsg, required , type} = props;
 
   return (
     <MCustomFormInput>
-      <input type="text" placeholder={placeholder} value={value} onChange={onChange} onBlur={onBlur} name={name} />
+      {type === "2" ? (
+        <NumberFormat placeholder={placeholder} value={value}  onChange={onChange} onBlur={onBlur} name={name} thousandSeparator={true} prefix={'₦'} />
+      ) : (
+        <input type={type} placeholder={placeholder} value={value} onChange={onChange} onBlur={onBlur} name={name} />
+      )}
+      
       {errMsg ? <span className="error">{errMsg}</span> : required ? <span className="required">Required </span> : null}
     </MCustomFormInput>
   );

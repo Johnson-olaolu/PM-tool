@@ -34,7 +34,11 @@ export const updateProjectValidatorSchema = yup.object().shape({
 })
 
 export const createInventoryValidatorSchema = yup.object().shape({
-    name : yup.string().required("Pleas enter a name"),
+    name : yup.string().required("Please enter a name"),
     amount : yup.number().min(1, "Amount must me more than 0"),
     price : yup.number().min(10,"Price mor be more than 10")
+})
+
+export const rejectProjectValidatorSchema = yup.object().shape({
+    comment : yup.string().required("Please enter a comment")
 })

@@ -4,6 +4,7 @@ import ProjectDashboard from './ProjectDashboard'
 import ViewAllProjects from './ViewAllProjects'
 import ViewSingleProject from './ViewSingleProject'
 import ViewSingleProjectAdmin from './admin/ViewSIngleProjectAdmin'
+import ViewAllProjectsAdmin from './admin/ViewAllProjectsAdmin'
 const CreateProject = React.lazy(() => import('./CreateProject'))
 
 const ProjectRoutes = () => {
@@ -16,7 +17,7 @@ const ProjectRoutes = () => {
             <Route path='/:projectId' element = {<ViewSingleProject/>}/>
 
             {/* admin routes */}
-            <Route path='/admin/all' element ={<ViewAllProjects/>}/>
+            <Route path='/admin/all' element ={<ViewAllProjectsAdmin/>}/>
             <Route path='/admin/:projectId' element = {<ViewSingleProjectAdmin/>}/>
 
             <Route path='/*' element = {<Navigate to={"/404"}/>} />

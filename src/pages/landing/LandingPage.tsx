@@ -26,13 +26,12 @@ const LandingPage = () => {
               >
                 <Image src={require("../../assets/loginlogo.svg").default} h={16} />
                 <Text fontSize={"sm"} color={"moneypoint-blue"} textAlign={"center"} fontWeight={"medium"}>
-                  As an Admin
+                  Login as State Coordinator
                 </Text>
               </Flex>
             </Link>
 
-            <Link to={"#"}>
-              {" "}
+            <Link to={"/auth/admin/login"}>
               <Flex
                 justify={"center"}
                 direction={"column"}
@@ -46,7 +45,7 @@ const LandingPage = () => {
               >
                 <Image src={require("../../assets/loginlogo.svg").default} h={16} />
                 <Text fontSize={"sm"} color={"moneypoint-blue"} textAlign={"center"} fontWeight={"medium"}>
-                  As State Cordinator
+                  Login as admin
                 </Text>
               </Flex>
             </Link>

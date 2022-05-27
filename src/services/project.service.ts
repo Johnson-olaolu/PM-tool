@@ -35,7 +35,7 @@ const fetchAllProjects = (state?: string, status?: string, payment_status?: stri
 };
 const fetchSingleProject = (id: string): Promise<IProject> => {
   return axiosService
-    .get(`https://monie-point.herokuapp.com/api/v1/project/get-project/${id}`)
+    .get(`project/get-project/${id}`)
     .then((res) => {
       return res.data.project;
     })
@@ -47,7 +47,7 @@ const fetchSingleProject = (id: string): Promise<IProject> => {
 const updateSingleProject = (project_id: string, payload: { name: string; value: any }) => {
   const { name, value} = payload
   return axiosService
-    .patch(`https://monie-point.herokuapp.com/api/v1/project/update-project/${project_id}`, {[name]: value})
+    .patch(`project/update-project/${project_id}`, {[name]: value})
     .then((res) => {
       return res.data.updatedProject;
     })
@@ -56,9 +56,31 @@ const updateSingleProject = (project_id: string, payload: { name: string; value:
     });
 };
 
+const approveProject  = (project_id : string) : Promise<IProject> => {
+  return axiosService.patch(`project/approve-project/${project_id}`)
+    .then(res => {
+      return res.data.updatedProject
+    })
+    .catch(err => {
+      return Promise.reject(err)
+    }) 
+}
+
+const rejectProject  = (project_id : string, comment : string) : Promise<IProject> => {
+  return axiosService.patch(`project/reject-project/${project_id}` , {comment : comment})
+    .then(res => {
+      return res.data.updatedProject
+    })
+    .catch(err => {
+      return Promise.reject(err)
+    }) 
+}
+
 export const projectService = {
   createNewProject,
+  rejectProject,
   fetchAllProjects,
   fetchSingleProject,
   updateSingleProject,
+  approveProject
 };

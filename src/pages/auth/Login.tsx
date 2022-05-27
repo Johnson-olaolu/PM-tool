@@ -24,7 +24,7 @@ const Login = () => {
     onSubmit: async(values) => {
       setIsLoading(true)
         const response = await authService.login(values.email, values.password)  
-        dispatch(userLogin(response.user))
+        dispatch(userLogin(response))
         setTimeout(() => {
           navigate("/project")
         }, 300) 

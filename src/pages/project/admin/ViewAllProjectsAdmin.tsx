@@ -8,13 +8,13 @@ import { RootState } from "../../../store";
 import NumberFormat from "react-number-format";
 import { FiChevronLeft } from "react-icons/fi";
 
-const ViewAllProjects = () => {
+const ViewAllProjectsAdmin = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.user);
   const [projects, setProjects] = useState<IProject[]>([]);
-  const fetchAllProjects = (state: string) => {
+  const fetchAllProjects = () => {
     projectService
-      .fetchAllProjects(state)
+      .fetchAllProjects()
       .then((res) => {
         setProjects(res);
       })
@@ -24,28 +24,24 @@ const ViewAllProjects = () => {
   };
 
   useEffect(() => {
-    fetchAllProjects(user?.state!);
+    fetchAllProjects();
   }, []);
 
-  const navigateToProject = (id: string) => {
-    navigate(`/project/${id}`);
+  const adminNavigateToProject = (id: string) => {
+    navigate(`/project/admin/${id}`);
   };
 
   return (
     <Box paddingX={"120px"} overflowY={"auto"} paddingBottom={"40px"} paddingTop={"60px"}>
-      <Flex marginBottom={"20px"}>
+      <Flex marginBottom={"20px"} justifyContent= "space-between" width={"100%"}>
         <Flex alignItems={"center"} gap={"20px"}>
-          <FiChevronLeft
-            style={{ cursor: "pointer" }}
-            fontSize={"24px"}
-            onClick={() => {
-              navigate(`/project`);
-            }}
-          />
           <Text color={"blackAlpha.800"} fontWeight={"medium"}>
-            {user?.state} State
+            Filter
           </Text>
         </Flex>
+        <Box>
+            Filter box
+          </Box>
       </Flex>
       <TableContainer>
         <Table variant="simple" style={{ borderCollapse: "separate", borderSpacing: "0 12px" }}>
@@ -59,6 +55,9 @@ const ViewAllProjects = () => {
               </Th>
               <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
                 Vendor
+              </Th>
+              <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
+                State
               </Th>
               <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
                 Invoice
@@ -75,7 +74,7 @@ const ViewAllProjects = () => {
             {projects
               .sort((a, b) => (a.title < b.title ? -1 : 1))
               .map((project) => (
-                <Tr backgroundColor={"white"} cursor={"pointer "} borderRadius={"4px"} shadow={"sm"} onClick={() => navigateToProject(project._id)}>
+                <Tr key={project._id} backgroundColor={"white"} cursor={"pointer "} borderRadius={"4px"} shadow={"sm"} onClick={() => adminNavigateToProject(project._id)}>
                   <Td fontSize={"14px"} >
                     <Text maxW={"200px"} overflowX={"hidden"} textOverflow={"ellipsis"} title={project.title}>{project.title}</Text>
                   </Td>
@@ -85,6 +84,7 @@ const ViewAllProjects = () => {
                     </Text>
                   </Td>
                   <Td fontSize={"14px"}>{project.vendor}</Td>
+                  <Td fontSize={"14px"}>{project.state}</Td>
                   <Td fontSize={"14px"}>{project.receipt.length > 0 ? "Uploaded" : ""}</Td>
                   <Td fontSize={"14px"}>
                     <NumberFormat value={project.amount} displayType={"text"} thousandSeparator={true} prefix={"₦"} />
@@ -103,4 +103,4 @@ const ViewAllProjects = () => {
   );
 };
 
-export default ViewAllProjects;
+export default ViewAllProjectsAdmin;

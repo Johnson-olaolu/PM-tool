@@ -21,10 +21,8 @@ export const createProjectValidatorSchema = yup.object().shape({
 
 
 export const createInventoryValidatorSchema = yup.object().shape({
-    name : yup.string().required("Please enter a name"),
+    inventoryId : yup.string().required("Please select an inventory"),
     amount : yup.number().min(1, "Amount must me more than 0").required("Amount paid must be more than 10"),
-    price : yup.number().min(10,"Price must be more than 10").required("Price paid must be more than 10"),
-    vendor : yup.string().required("Please Enter a vendor")
 })
 
 export const createMiscellaneousValidatorSchema = yup.object().shape({

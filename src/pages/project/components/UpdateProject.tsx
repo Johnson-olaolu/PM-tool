@@ -29,7 +29,7 @@ interface ICreateProject {
   receipt?: string[];
   state: string;
   miscellaneous: IMiscellaneous[];
-  inventory: IInventory[];
+  inventory: {inventoryId : string, amount : number}[];
   paid_amount: number;
 }
 
@@ -44,6 +44,7 @@ const UpdateProject: React.FC<IUpdateProject> = (props) => {
   const { projectDetails, name, setProjectDetails, setModalOpen } = props;
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.user);
+  const [inventories, setInventories] = useState<IInventory[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast()
@@ -56,7 +57,7 @@ const UpdateProject: React.FC<IUpdateProject> = (props) => {
     images: projectDetails.images,
     receipt: projectDetails.receipt,
     state: projectDetails.state,
-    inventory: projectDetails.inventory,
+    inventory: projectDetails.inventory.map((inv) => ({inventoryId : inv.inventory._id, amount : inv.amount})),
     miscellaneous: projectDetails.miscellaneous,
     paid_amount: projectDetails.paid_amount,
   };
@@ -133,17 +134,15 @@ const UpdateProject: React.FC<IUpdateProject> = (props) => {
     formik.setFieldValue(name, newImageArray);
   };
 
-  const inventoryInitialvalues: IInventory = { amount: 0, name: "", price: 0, vendor: "" };
+  const inventoryInitialvalues: { inventoryId : string , amount : number} = { inventoryId: "", amount : 0 };
   const inventoryFormik = useFormik({
     validationSchema: createInventoryValidatorSchema,
     initialValues: inventoryInitialvalues,
     onSubmit: (values) => {
       const currentInventory = formik.values.inventory;
       currentInventory.push({
-        name: values.name,
+        inventoryId : values.inventoryId,
         amount: values.amount,
-        price: values.price,
-        vendor: values.vendor,
       });
       //formik.setFieldValue("inventory", currentInventory)
       inventoryFormik.resetForm();
@@ -165,8 +164,8 @@ const UpdateProject: React.FC<IUpdateProject> = (props) => {
     },
   });
 
-  const handleRemoveInventory = (item: IInventory) => {
-    const newIventoryArray = formik.values.inventory.filter((inv) => inv !== item);
+  const handleRemoveInventory = (inventoryId : string) => {
+    const newIventoryArray = formik.values.inventory.filter((inv) => inv.inventoryId !== inventoryId);
     formik.setFieldValue("inventory", newIventoryArray);
   };
 
@@ -259,93 +258,80 @@ const UpdateProject: React.FC<IUpdateProject> = (props) => {
               Add Inventory
             </Heading>
             <TableContainer marginBottom={"20px"}>
-              <Table variant="simple" style={{ borderCollapse: "separate", borderSpacing: "0 12px" }}>
-                {formik.values.inventory.map((inv) => (
-                  <Tr backgroundColor={"white"} cursor={"pointer "} borderRadius={"4px"} shadow={"sm"}>
-                    <Td fontSize={"12px"}>
-                      Name: <strong>{inv.name}</strong>
-                    </Td>
-                    <Td fontSize={"12px"}>
-                      Amount: <strong>{inv.amount}</strong>
-                    </Td>
-                    <Td fontSize={"12px"}>
-                      Price:{" "}
-                      <strong>
-                        <NumberFormat value={inv.price} thousandSeparator={true} prefix={"₦"} displayType={"text"} />
-                      </strong>
-                    </Td>
-                    <Td fontSize={"12px"}>
-                      Vendor: <strong> {inv.vendor} </strong>
-                    </Td>
-                    <Td fontSize={"12px"}>
-                      <FaTrash color="red" onClick={() => handleRemoveInventory(inv)} />
-                    </Td>
-                  </Tr>
-                ))}
-                <TableCaption fontSize={"12px"} textAlign={"left"} padding={0} margin={0}>
-                  Total Amount :{" "}
-                  <NumberFormat
-                    value={formik.values.inventory.reduce((a, b) => b.amount * b.price + a, 0).toString()}
-                    displayType={"text"}
-                    thousandSeparator={true}
-                    prefix={"₦"}
-                  />
-                </TableCaption>
-              </Table>
-            </TableContainer>
+                <Table variant="simple" style={{ borderCollapse: "separate", borderSpacing: "0 12px" }}>
+                  {formik.values.inventory.map((inv) => (
+                    <Tr backgroundColor={"white"} cursor={"pointer "} borderRadius={"4px"} shadow={"sm"}>
+                      <Td fontSize={"12px"}>
+                        Name: <strong>{inventories.find((i) => i._id === inv.inventoryId)?.name}</strong>
+                      </Td>
+                      <Td fontSize={"12px"}>
+                        Amount: <strong>{inv.amount}</strong>
+                      </Td>
+                      <Td fontSize={"12px"}>
+                        Price:{" "}
+                        <strong>
+                          <NumberFormat
+                            value={inventories.find((i) => i._id === inv.inventoryId)?.price}
+                            thousandSeparator={true}
+                            prefix={"₦"}
+                            displayType={"text"}
+                          />
+                        </strong>
+                      </Td>
+                      <Td fontSize={"12px"}>
+                        Vendor: <strong> {inventories.find((i) => i._id === inv.inventoryId)?.vendor} </strong>
+                      </Td>
+                      <Td fontSize={"12px"}>
+                        <FaTrash color="red" onClick={() => handleRemoveInventory(inv.inventoryId)} />
+                      </Td>
+                    </Tr>
+                  ))}
+                  <TableCaption fontSize={"12px"} textAlign={"left"}>
+                    Total Amount :{" "}
+                    <NumberFormat
+                      value={formik.values.inventory
+                        .reduce((a, b) => b.amount * inventories.find((i) => i._id === b.inventoryId)?.price! + a, 0)
+                        .toString()}
+                      displayType={"text"}
+                      thousandSeparator={true}
+                      prefix={"₦"}
+                    />
+                  </TableCaption>
+                </Table>
+              </TableContainer>
 
-            <VStack spacing={"12px"} alignItems={"start"}>
-              <CustomFormInput
-                name="name"
-                onBlur={inventoryFormik.handleBlur}
-                onChange={inventoryFormik.handleChange}
-                placeholder="Item Name"
-                required={true}
-                type="text"
-                value={inventoryFormik.values.name}
-                errMsg={inventoryFormik.errors.name && inventoryFormik.touched.name ? inventoryFormik.errors.name : null}
-              />
-              <CustomFormInput
-                name="amount"
-                onBlur={inventoryFormik.handleBlur}
-                onChange={inventoryFormik.handleChange}
-                placeholder="Item Amount"
-                required={true}
-                type="number"
-                value={inventoryFormik.values.amount > 0 ? inventoryFormik.values.amount : ""}
-                errMsg={inventoryFormik.errors.amount && inventoryFormik.touched.amount ? inventoryFormik.errors.amount : null}
-              />
-              <CustomFormInput
-                name="price"
-                onBlur={inventoryFormik.handleBlur}
-                onChange={inventoryFormik.handleChange}
-                placeholder="Item Price"
-                required={true}
-                type="amount"
-                value={inventoryFormik.values.price > 0 ? inventoryFormik.values.price : ""}
-                errMsg={inventoryFormik.errors.price && inventoryFormik.touched.price ? inventoryFormik.errors.price : null}
-              />
-              <CustomFormInput
-                name="vendor"
-                onBlur={inventoryFormik.handleBlur}
-                onChange={inventoryFormik.handleChange}
-                placeholder="Item Vendor"
-                required={true}
-                type="text"
-                value={inventoryFormik.values.vendor}
-                errMsg={inventoryFormik.errors.vendor && inventoryFormik.touched.vendor ? inventoryFormik.errors.vendor : null}
-              />
-              <Button
-                padding={"12px 40px"}
-                color={"white"}
-                bg={"moneypoint-blue"}
-                fontSize={"sm"}
-                colorScheme={"moneypoint-blue"}
-                onClick={(e) => inventoryFormik.handleSubmit()}
-              >
-                Add Inventory Item
-              </Button>
-            </VStack>
+              <VStack spacing={"12px"} alignItems={"start"}>
+                <CustomFormSelect
+                  name="inventoryId"
+                  data={inventories.map(inv => ({name : inv.name, value : inv._id}))}
+                  onSelect={onSelect}
+                  placeholder="Select Inventory"
+                  required={true}
+                  value={inventoryFormik.values.inventoryId}
+                  errMsg={inventoryFormik.errors.inventoryId && inventoryFormik.touched.inventoryId ? inventoryFormik.errors.inventoryId : null}
+                  onBlur={inventoryFormik.handleBlur}
+                />
+                <CustomFormInput
+                  name="amount"
+                  onBlur={inventoryFormik.handleBlur}
+                  onChange={inventoryFormik.handleChange}
+                  placeholder="Item Amount"
+                  required={true}
+                  type="number"
+                  value={inventoryFormik.values.amount > 0 ? inventoryFormik.values.amount : ""}
+                  errMsg={inventoryFormik.errors.amount && inventoryFormik.touched.amount ? inventoryFormik.errors.amount : null}
+                />
+                <Button
+                  padding={"12px 40px"}
+                  color={"white"}
+                  bg={"moneypoint-blue"}
+                  fontSize={"sm"}
+                  colorScheme={"moneypoint-blue"}
+                  onClick={(e) => inventoryFormik.handleSubmit()}
+                >
+                  Add Inventory Item
+                </Button>
+              </VStack>
           </Box>
         )}
 

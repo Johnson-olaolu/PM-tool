@@ -55,8 +55,8 @@ const ViewAllProjects = () => {
       case "total_amount":
         sortedProjects = projects.sort(
           (a, b) =>
-            a.inventory.reduce((inva, invb) => invb.price * invb.amount + inva, 0) -
-            b.inventory.reduce((inva, invb) => invb.price * invb.amount + inva, 0)
+            a.inventory.reduce((inva, invb) => invb.inventory.price * invb.amount + inva, 0) -
+            b.inventory.reduce((inva, invb) => invb.inventory.price * invb.amount + inva, 0)
         );
         setProjects([...sortedProjects]);
         break;
@@ -154,7 +154,7 @@ const ViewAllProjects = () => {
                 <Td fontSize={"14px"}>
                   <NumberFormat
                     value={
-                      project.inventory.reduce((ainv, binv) => binv.price * binv.amount + ainv, 0) +
+                      project.inventory.reduce((ainv, binv) => binv.inventory.price * binv.amount + ainv, 0) +
                       project.miscellaneous.reduce((amisc, bmisc) => bmisc.price + amisc, 0)
                     }
                     displayType={"text"}
@@ -174,7 +174,7 @@ const ViewAllProjects = () => {
               value={projects
                 .reduce(
                   (a, b) =>
-                    b.inventory.reduce((ainv, binv) => binv.price * binv.amount + ainv, 0) +
+                    b.inventory.reduce((ainv, binv) => binv.inventory.price * binv.amount + ainv, 0) +
                     b.miscellaneous.reduce((amisc, bmisc) => bmisc.price + amisc, 0) +
                     a,
                   0

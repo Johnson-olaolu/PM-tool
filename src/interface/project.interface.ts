@@ -8,7 +8,7 @@ export interface IProject {
   project_description: string;
   project_type: string;
   receipt: [];
-  inventory : IInventory[]
+  inventory : {inventory : IInventory, amount :number}[]
   miscellaneous : IMiscellaneous[]
   renovation_category: string;
   state: string;
@@ -21,10 +21,15 @@ export interface IProject {
 }
 
 export interface IInventory {
+  _id : string
   name : string
-  amount : number
   price : number
   vendor : string
+}
+
+export interface Ititle {
+  _id: string
+  title: string
 }
 
 export interface IMiscellaneous {

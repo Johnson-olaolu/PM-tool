@@ -23,7 +23,7 @@ import {
 } from "@chakra-ui/react";
 import { AxiosError } from "axios";
 import { useFormik } from "formik";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import CustomFormFileUpload from "../../components/forms/FormGroup/CustomFormFileUpload";
 import CustomFormInput from "../../components/forms/FormGroup/CustomFormInput";
@@ -33,12 +33,13 @@ import { cloudinaryService } from "../../services/cloudinary.service";
 import { projectService } from "../../services/project.service";
 import { RootState } from "../../store";
 import { projectCategories } from "../../utils/constants";
-import { createInventoryValidatorSchema,  createMiscellaneousValidatorSchema, createProjectValidatorSchema } from "../../utils/validators";
+import { createInventoryValidatorSchema, createMiscellaneousValidatorSchema, createProjectValidatorSchema } from "../../utils/validators";
 import { useNavigate } from "react-router";
 import { FiChevronLeft } from "react-icons/fi";
-import { IInventory, IMiscellaneous } from "../../interface/project.interface";
+import { IInventory, IMiscellaneous, Ititle } from "../../interface/project.interface";
 import { FaTrash } from "react-icons/fa";
 import NumberFormat from "react-number-format";
+import { inventoryService } from "../../services/inventories.service";
 
 interface ICreateProject {
   title: string;
@@ -46,7 +47,7 @@ interface ICreateProject {
   renovation_category: string;
   office_area_for_renovation: string;
   project_description: string;
-  inventory: IInventory[];
+  inventory: { inventoryId: string; amount: number }[];
   miscellaneous: IMiscellaneous[];
   amount_paid: number;
   images?: string[];
@@ -59,6 +60,8 @@ const CreateProject = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalDetails, setModalDetails] = useState({ title: "", text: "", link: "" });
   const [isLoading, setIsLoading] = useState(false);
+  const [inventories, setInventories] = useState<IInventory[]>([]);
+ const [titles, setTitles] = useState<Ititle[]>([])
   const { user } = useSelector((state: RootState) => state.user);
   const initialValues: ICreateProject = {
     title: "",
@@ -96,17 +99,15 @@ const CreateProject = () => {
     },
   });
 
-  const inventoryInitialvalues: IInventory = { amount: 0, name: "", price: 0, vendor: "" };
+  const inventoryInitialvalues: { inventoryId: string; amount: number } = { inventoryId: "", amount: 0 };
   const inventoryFormik = useFormik({
     validationSchema: createInventoryValidatorSchema,
     initialValues: inventoryInitialvalues,
     onSubmit: (values) => {
       const currentInventory = formik.values.inventory;
       currentInventory.push({
-        name: values.name,
+        inventoryId: values.inventoryId,
         amount: values.amount,
-        price: values.price,
-        vendor: values.vendor,
       });
       //formik.setFieldValue("inventory", currentInventory)
       inventoryFormik.resetForm();
@@ -130,6 +131,10 @@ const CreateProject = () => {
 
   const onSelect = (name: string, value: any) => {
     formik.setFieldValue(name, value);
+  };
+
+  const inventoryOnSelect = (name: string, value: any) => {
+    inventoryFormik.setFieldValue(name, value);
   };
 
   const handleSelectImage = (name: string, image: File) => {
@@ -172,8 +177,8 @@ const CreateProject = () => {
     formik.setFieldValue(name, newImageArray);
   };
 
-  const handleRemoveInventory = (item: IInventory) => {
-    const newIventoryArray = formik.values.inventory.filter((inv) => inv !== item);
+  const handleRemoveInventory = (inventoryId: string) => {
+    const newIventoryArray = formik.values.inventory.filter((inv) => inv.inventoryId !== inventoryId);
     formik.setFieldValue("inventory", newIventoryArray);
   };
 
@@ -181,6 +186,27 @@ const CreateProject = () => {
     const newmiscellaneousArray = formik.values.miscellaneous.filter((misc) => misc !== item);
     formik.setFieldValue("miscellaneous", newmiscellaneousArray);
   };
+
+  useEffect(() => {
+    inventoryService.getAllInventories()
+      .then(res => {
+        setInventories(res)
+      })
+      .catch(err => {
+        console.error(err)
+      })
+  }, [])
+
+  useEffect(() => {
+    projectService.fetchProjectsTitles()
+      .then(res => {
+        setTitles(res)
+      })
+      .catch(err => {
+        console.error(err)
+      })
+  }, [])
+  
   return (
     <>
       <Box paddingX={"120px"} overflowY={"auto"} paddingBottom={"40px"} paddingTop={"60px"}>
@@ -199,15 +225,15 @@ const CreateProject = () => {
 
         <form onSubmit={formik.handleSubmit}>
           <VStack spacing={"12px"} maxWidth={"500px"} margin={"0 auto"}>
-            <CustomFormInput
+          <CustomFormSelect
               name="title"
-              onBlur={formik.handleBlur}
-              onChange={formik.handleChange}
-              placeholder="Title/Summary"
+              data={titles.map((cat) => ({ name: cat.title, value: cat._id }))}
+              onSelect={onSelect}
+              placeholder="Select Title"
               required={true}
-              type="text"
               value={formik.values.title}
               errMsg={formik.errors.title && formik.touched.title ? formik.errors.title : null}
+              onBlur={formik.handleBlur}
             />
 
             <CustomFormSelect
@@ -268,7 +294,7 @@ const CreateProject = () => {
                   {formik.values.inventory.map((inv) => (
                     <Tr backgroundColor={"white"} cursor={"pointer "} borderRadius={"4px"} shadow={"sm"}>
                       <Td fontSize={"12px"}>
-                        Name: <strong>{inv.name}</strong>
+                        Name: <strong>{inventories.find((i) => i._id === inv.inventoryId)?.name}</strong>
                       </Td>
                       <Td fontSize={"12px"}>
                         Amount: <strong>{inv.amount}</strong>
@@ -276,21 +302,28 @@ const CreateProject = () => {
                       <Td fontSize={"12px"}>
                         Price:{" "}
                         <strong>
-                          <NumberFormat value={inv.price} thousandSeparator={true} prefix={"₦"} displayType={"text"} />
+                          <NumberFormat
+                            value={inventories.find((i) => i._id === inv.inventoryId)?.price}
+                            thousandSeparator={true}
+                            prefix={"₦"}
+                            displayType={"text"}
+                          />
                         </strong>
                       </Td>
                       <Td fontSize={"12px"}>
-                        Vendor: <strong> {inv.vendor} </strong>
+                        Vendor: <strong> {inventories.find((i) => i._id === inv.inventoryId)?.vendor} </strong>
                       </Td>
                       <Td fontSize={"12px"}>
-                        <FaTrash color="red" onClick={() => handleRemoveInventory(inv)} />
+                        <FaTrash color="red" onClick={() => handleRemoveInventory(inv.inventoryId)} />
                       </Td>
                     </Tr>
                   ))}
                   <TableCaption fontSize={"12px"} textAlign={"left"}>
                     Total Amount :{" "}
                     <NumberFormat
-                      value={formik.values.inventory.reduce((a, b) => b.amount * b.price + a, 0).toString()}
+                      value={formik.values.inventory
+                        .reduce((a, b) => b.amount * inventories.find((i) => i._id === b.inventoryId)?.price! + a, 0)
+                        .toString()}
                       displayType={"text"}
                       thousandSeparator={true}
                       prefix={"₦"}
@@ -300,15 +333,15 @@ const CreateProject = () => {
               </TableContainer>
 
               <VStack spacing={"12px"} alignItems={"start"}>
-                <CustomFormInput
-                  name="name"
-                  onBlur={inventoryFormik.handleBlur}
-                  onChange={inventoryFormik.handleChange}
-                  placeholder="Item Name"
+                <CustomFormSelect
+                  name="inventoryId"
+                  data={inventories.map(inv => ({name : inv.name, value : inv._id}))}
+                  onSelect={inventoryOnSelect}
+                  placeholder="Select Inventory"
                   required={true}
-                  type="text"
-                  value={inventoryFormik.values.name}
-                  errMsg={inventoryFormik.errors.name && inventoryFormik.touched.name ? inventoryFormik.errors.name : null}
+                  value={inventoryFormik.values.inventoryId}
+                  errMsg={inventoryFormik.errors.inventoryId && inventoryFormik.touched.inventoryId ? inventoryFormik.errors.inventoryId : null}
+                  onBlur={inventoryFormik.handleBlur}
                 />
                 <CustomFormInput
                   name="amount"
@@ -317,28 +350,8 @@ const CreateProject = () => {
                   placeholder="Item Amount"
                   required={true}
                   type="number"
-                  value={inventoryFormik.values.amount > 0 ? inventoryFormik.values.amount: "" }
+                  value={inventoryFormik.values.amount > 0 ? inventoryFormik.values.amount : ""}
                   errMsg={inventoryFormik.errors.amount && inventoryFormik.touched.amount ? inventoryFormik.errors.amount : null}
-                />
-                <CustomFormInput
-                  name="price"
-                  onBlur={inventoryFormik.handleBlur}
-                  onChange={inventoryFormik.handleChange}
-                  placeholder="Item Price"
-                  required={true}
-                  type="amount"
-                  value={inventoryFormik.values.price > 0 ?inventoryFormik.values.price : ""}
-                  errMsg={inventoryFormik.errors.price && inventoryFormik.touched.price ? inventoryFormik.errors.price : null}
-                />
-                <CustomFormInput
-                  name="vendor"
-                  onBlur={inventoryFormik.handleBlur}
-                  onChange={inventoryFormik.handleChange}
-                  placeholder="Item Vendor"
-                  required={true}
-                  type="text"
-                  value={inventoryFormik.values.vendor}
-                  errMsg={inventoryFormik.errors.vendor && inventoryFormik.touched.vendor ? inventoryFormik.errors.vendor : null}
                 />
                 <Button
                   padding={"12px 40px"}
@@ -429,10 +442,10 @@ const CreateProject = () => {
               placeholder="Amount Paid"
               required={true}
               type="number"
-              value={formik.values.amount_paid > 0 ?formik.values.amount_paid : null}
+              value={formik.values.amount_paid > 0 ? formik.values.amount_paid : null}
               errMsg={formik.errors.amount_paid && formik.touched.amount_paid ? formik.errors.amount_paid : null}
             />
-            
+
             <CustomFormFileUpload
               name="images"
               title="Upload Images"

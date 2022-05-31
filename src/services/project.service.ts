@@ -9,8 +9,8 @@ const createNewProject = (payload: {
   project_description: string;
   amount_paid: number;
   images?: string[];
-  inventory?: IInventory[];
-  miscellaneous?: IMiscellaneous[] 
+  inventory?: { inventoryId: string; amount: number }[];
+  miscellaneous?: IMiscellaneous[];
   receipt?: string[];
   state: string;
 }): Promise<IProject> => {
@@ -46,9 +46,9 @@ const fetchSingleProject = (id: string): Promise<IProject> => {
 };
 
 const updateSingleProject = (project_id: string, payload: { name: string; value: any }) => {
-  const { name, value} = payload
+  const { name, value } = payload;
   return axiosService
-    .patch(`project/update-project/${project_id}`, {[name]: value})
+    .patch(`project/update-project/${project_id}`, { [name]: value })
     .then((res) => {
       return res.data.updatedProject;
     })
@@ -57,25 +57,38 @@ const updateSingleProject = (project_id: string, payload: { name: string; value:
     });
 };
 
-const approveProject  = (project_id : string) : Promise<IProject> => {
-  return axiosService.patch(`project/approve-project/${project_id}`)
-    .then(res => {
-      return res.data.updatedProject
+const approveProject = (project_id: string): Promise<IProject> => {
+  return axiosService
+    .patch(`project/approve-project/${project_id}`)
+    .then((res) => {
+      return res.data.updatedProject;
     })
-    .catch(err => {
-      return Promise.reject(err)
-    }) 
-}
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+};
 
-const rejectProject  = (project_id : string, comment : string) : Promise<IProject> => {
-  return axiosService.patch(`project/reject-project/${project_id}` , {comment : comment})
-    .then(res => {
-      return res.data.updatedProject
+const rejectProject = (project_id: string, comment: string): Promise<IProject> => {
+  return axiosService
+    .patch(`project/reject-project/${project_id}`, { comment: comment })
+    .then((res) => {
+      return res.data.updatedProject;
     })
-    .catch(err => {
-      return Promise.reject(err)
-    }) 
-}
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+};
+
+const fetchProjectsTitles = () => {
+  return axiosService
+    .get(`title/get/all`)
+    .then((res) => {
+      return res.data.titles;
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+};
 
 export const projectService = {
   createNewProject,
@@ -83,5 +96,6 @@ export const projectService = {
   fetchAllProjects,
   fetchSingleProject,
   updateSingleProject,
-  approveProject
+  approveProject,
+  fetchProjectsTitles
 };

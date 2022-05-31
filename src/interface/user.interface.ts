@@ -4,4 +4,5 @@ export interface IUser {
     user_type : string,
     fullName : string,
     phoneNum : string
+    address : string
 }

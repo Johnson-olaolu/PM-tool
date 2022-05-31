@@ -2,25 +2,33 @@ import {
   Box,
   Button,
   Flex,
+  Heading,
   Image,
   Modal,
   ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
   Stack,
+  Table,
+  TableCaption,
+  TableContainer,
+  Td,
   Text,
+  Tr,
   VStack,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { FiEdit, FiChevronsLeft, FiChevronLeft } from "react-icons/fi";
+import { FiEdit, FiChevronLeft } from "react-icons/fi";
 import { IProject } from "../../interface/project.interface";
 import { projectService } from "../../services/project.service";
 import UpdateProject from "./components/UpdateProject";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
+import NumberFormat from "react-number-format";
 
 const ViewSingleProject = () => {
   const navigate = useNavigate();
@@ -30,8 +38,6 @@ const ViewSingleProject = () => {
   const [updateName, setUpdateName] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-
   const fetchSingleProject = () => {
     projectService
       .fetchSingleProject(projectId!)
@@ -44,15 +50,6 @@ const ViewSingleProject = () => {
   useEffect(() => {
     fetchSingleProject();
   }, []);
-
-  useEffect(() => {
-    if (user?.user_type === "State-Coordinator") {
-      setIsOwner(true);
-    }
-    if (user?.user_type) {
-      setIsAdmin(true);
-    }
-  }, [user]);
 
   const openModal = (name: string) => {
     setUpdateName(name);
@@ -83,89 +80,185 @@ const ViewSingleProject = () => {
             </Text>
             <Flex gap={"8px"} alignItems={"center"}>
               <Text>{projectDetails?.project_description}</Text>
-              {isOwner && (
-                <Button
-                  variant={"link"}
-                  color={"moneypoint-blue"}
-                  _focus={{ boxShadow: "none" }}
-                  height={"auto"}
-                  onClick={() => openModal("project_description")}
-                >
-                  {<FiEdit fontSize={"16px"} />}
-                </Button>
-              )}
+              <Button
+                variant={"link"}
+                color={"moneypoint-blue"}
+                _focus={{ boxShadow: "none" }}
+                height={"auto"}
+                onClick={() => openModal("project_description")}
+              >
+                {<FiEdit fontSize={"16px"} />}
+              </Button>
             </Flex>
           </Box>
-          <Box>
-            <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
-              Amount
-            </Text>
-            <Flex gap={"8px"} alignItems={"center"}>
-              <Text>{projectDetails?.amount}</Text>
-              {isOwner && (
-                <Button variant={"link"} color={"moneypoint-blue"} _focus={{ boxShadow: "none" }} height={"auto"} onClick={() => openModal("amount")}>
-                  {<FiEdit fontSize={"16px"} />}
-                </Button>
-              )}
-            </Flex>
-          </Box>
+
           <Box>
             <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
               Project Type
             </Text>
             <Flex gap={"8px"} alignItems={"center"}>
               <Text>{projectDetails?.project_type}</Text>
-              {isOwner && (
-                <Button
-                  variant={"link"}
-                  color={"moneypoint-blue"}
-                  _focus={{ boxShadow: "none" }}
-                  height={"auto"}
-                  onClick={() => openModal("project_type")}
-                >
-                  {<FiEdit fontSize={"16px"} />}
-                </Button>
-              )}
+              <Button
+                variant={"link"}
+                color={"moneypoint-blue"}
+                _focus={{ boxShadow: "none" }}
+                height={"auto"}
+                onClick={() => openModal("project_type")}
+              >
+                {<FiEdit fontSize={"16px"} />}
+              </Button>
             </Flex>
           </Box>
+
           <Box>
             <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
               Renovation Category
             </Text>
             <Flex gap={"8px"} alignItems={"center"}>
               <Text>{projectDetails?.renovation_category}</Text>
-              {isOwner && (
-                <Button
-                  variant={"link"}
-                  color={"moneypoint-blue"}
-                  _focus={{ boxShadow: "none" }}
-                  height={"auto"}
-                  onClick={() => openModal("renovation_category")}
-                >
-                  {<FiEdit fontSize={"16px"} />}
-                </Button>
-              )}
+              <Button
+                variant={"link"}
+                color={"moneypoint-blue"}
+                _focus={{ boxShadow: "none" }}
+                height={"auto"}
+                onClick={() => openModal("renovation_category")}
+              >
+                {<FiEdit fontSize={"16px"} />}
+              </Button>
             </Flex>
           </Box>
+
           <Box>
             <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
               Office Area for Renovation
             </Text>
             <Flex gap={"8px"} alignItems={"center"}>
               <Text>{projectDetails?.office_area_for_renovation}</Text>
-              {isOwner && (
-                <Button
-                  variant={"link"}
-                  color={"moneypoint-blue"}
-                  _focus={{ boxShadow: "none" }}
-                  height={"auto"}
-                  onClick={() => openModal("office_area_for_renovation")}
-                >
-                  {<FiEdit fontSize={"16px"} />}
-                </Button>
-              )}
+              <Button
+                variant={"link"}
+                color={"moneypoint-blue"}
+                _focus={{ boxShadow: "none" }}
+                height={"auto"}
+                onClick={() => openModal("office_area_for_renovation")}
+              >
+                {<FiEdit fontSize={"16px"} />}
+              </Button>
             </Flex>
           </Box>
+
+          <Box>
+            <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
+              Inventory
+            </Text>
+            <Flex gap={"8px"} alignItems={"center"}>
+              <TableContainer>
+                <Table variant="simple" style={{ borderCollapse: "separate", borderSpacing: "0 12px" }}>
+                  {projectDetails?.inventory.map((inv) => (
+                    <Tr backgroundColor={"white"} cursor={"pointer "} borderRadius={"4px"} shadow={"sm"}>
+                      <Td fontSize={"12px"}>
+                        Name: <strong>{inv.name}</strong>
+                      </Td>
+                      <Td fontSize={"12px"}>
+                        Amount: <strong>{inv.amount}</strong>
+                      </Td>
+                      <Td fontSize={"12px"}>
+                        Price:{" "}
+                        <strong>
+                          <NumberFormat value={inv.price} thousandSeparator={true} prefix={"₦"} displayType={"text"} />
+                        </strong>
+                      </Td>
+                      <Td fontSize={"12px"}>
+                        Vendor: <strong> {inv.vendor} </strong>
+                      </Td>
+                    </Tr>
+                  ))}
+                  <TableCaption fontSize={"12px"} textAlign={"left"} padding={0} margin ={0}>
+                    Total Amount :{" "}
+                    <NumberFormat
+                      value={projectDetails?.inventory.reduce((a, b) => b.amount * b.price + a, 0).toString()}
+                      displayType={"text"}
+                      thousandSeparator={true}
+                      prefix={"₦"}
+                    />
+                  </TableCaption>
+                </Table>
+              </TableContainer>
+              <Button
+                variant={"link"}
+                color={"moneypoint-blue"}
+                _focus={{ boxShadow: "none" }}
+                height={"auto"}
+                onClick={() => openModal("inventory")}
+              >
+                {<FiEdit fontSize={"16px"} />}
+              </Button>
+            </Flex>
+          </Box>
+
+          <Box>
+            <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
+              Miscellaneous
+            </Text>
+            <Flex gap={"8px"} alignItems={"center"}>
+              <TableContainer>
+                <Table variant="simple" style={{ borderCollapse: "separate", borderSpacing: "0 12px" }}>
+                  {projectDetails?.miscellaneous.map((misc) => (
+                    <Tr backgroundColor={"white"} cursor={"pointer "} borderRadius={"4px"} shadow={"sm"}>
+                      <Td fontSize={"12px"}>
+                        Name: <strong>{misc.name}</strong>
+                      </Td>
+                      <Td fontSize={"12px"}>
+                        Price:{" "}
+                        <strong>
+                          {" "}
+                          <NumberFormat value={misc.price} thousandSeparator={true} prefix={"₦"} displayType={"text"} />
+                        </strong>
+                      </Td>
+                    </Tr>
+                  ))}
+                  <TableCaption fontSize={"12px"} textAlign={"left"} padding={0} margin={0}>
+                    Total Amount :{" "}
+                    <NumberFormat
+                      value={projectDetails?.miscellaneous.reduce((a, b) => b.price + a, 0).toString()}
+                      displayType={"text"}
+                      thousandSeparator={true}
+                      prefix={"₦"}
+                    />
+                  </TableCaption>
+                </Table>
+              </TableContainer>
+              <Button
+                variant={"link"}
+                color={"moneypoint-blue"}
+                _focus={{ boxShadow: "none" }}
+                height={"auto"}
+                onClick={() => openModal("miscellaneous")}
+              >
+                {<FiEdit fontSize={"16px"} />}
+              </Button>
+            </Flex>
+          </Box>
+
+          <Box>
+            <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
+              Paid Amount
+            </Text>
+            <Flex gap={"8px"} alignItems={"center"}>
+              <Text>
+                <NumberFormat value={projectDetails?.paid_amount} displayType={"text"} thousandSeparator={true} prefix={"₦"} />
+              </Text>
+              <Button
+                variant={"link"}
+                color={"moneypoint-blue"}
+                _focus={{ boxShadow: "none" }}
+                height={"auto"}
+                onClick={() => openModal("paid_amount")}
+              >
+                {<FiEdit fontSize={"16px"} />}
+              </Button>
+            </Flex>
+          </Box>
+
           <Box>
             <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
               Images
@@ -176,13 +269,12 @@ const ViewSingleProject = () => {
                   <Image objectFit={"cover"} boxSize={"200px"} src={img} key={idx} />
                 ))}
               </Stack>
-              {isOwner && (
-                <Button variant={"link"} color={"moneypoint-blue"} _focus={{ boxShadow: "none" }} height={"auto"} onClick={() => openModal("images")}>
-                  {<FiEdit fontSize={"16px"} />}
-                </Button>
-              )}
+              <Button variant={"link"} color={"moneypoint-blue"} _focus={{ boxShadow: "none" }} height={"auto"} onClick={() => openModal("images")}>
+                {<FiEdit fontSize={"16px"} />}
+              </Button>
             </Flex>
           </Box>
+
           <Box>
             <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
               Reciepts
@@ -193,41 +285,11 @@ const ViewSingleProject = () => {
                   <Image objectFit={"cover"} boxSize={"200px"} src={img} key={idx} />
                 ))}
               </Stack>
-              {isOwner && (
-                <Button
-                  variant={"link"}
-                  color={"moneypoint-blue"}
-                  _focus={{ boxShadow: "none" }}
-                  height={"auto"}
-                  onClick={() => openModal("receipt")}
-                >
-                  {<FiEdit fontSize={"16px"} />}
-                </Button>
-              )}
+              <Button variant={"link"} color={"moneypoint-blue"} _focus={{ boxShadow: "none" }} height={"auto"} onClick={() => openModal("receipt")}>
+                {<FiEdit fontSize={"16px"} />}
+              </Button>
             </Flex>
           </Box>
-          {isAdmin && (
-            <Flex paddingTop={"40px"} gap={"40px"}>
-               <Button
-                padding={"12px 40px"}
-                color={"white"}
-                bg={"moneypoint-red"}
-                fontSize={"sm"}
-                colorScheme={"moneypoint-red"}
-              >
-                Reject
-              </Button>
-              <Button
-                padding={"12px 40px"}
-                color={"white"}
-                bg={"moneypoint-blue"}
-                fontSize={"sm"}
-                colorScheme={"moneypoint-blue"}
-              >
-               Approve
-              </Button>
-            </Flex>
-          )}
         </VStack>
       </Box>
 
@@ -241,6 +303,7 @@ const ViewSingleProject = () => {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Update Module</ModalHeader>
+          <ModalCloseButton />
           <ModalBody>
             <UpdateProject name={updateName} projectDetails={projectDetails!} setProjectDetails={setProjectDetails} setModalOpen={setModalOpen} />
           </ModalBody>

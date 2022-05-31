@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 interface ICustomFormInput {
   placeholder: string;
-  value: string | number;
+  value: string | number | null;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onBlur: (e: ChangeEvent<HTMLInputElement>) => void;
   name: string;
@@ -50,7 +50,7 @@ const CustomFormInput: React.FC<ICustomFormInput> = (props) => {
       {type === "2" ? (
         <NumberFormat placeholder={placeholder} value={value}  onChange={onChange} onBlur={onBlur} name={name} thousandSeparator={true} prefix={'₦'} />
       ) : (
-        <input type={type} placeholder={placeholder} value={value} onChange={onChange} onBlur={onBlur} name={name} />
+        <input type={type} placeholder={placeholder} value={value!} onChange={onChange} onBlur={onBlur} name={name} />
       )}
       
       {errMsg ? <span className="error">{errMsg}</span> : required ? <span className="required">Required </span> : null}

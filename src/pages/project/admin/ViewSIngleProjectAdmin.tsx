@@ -96,14 +96,14 @@ const ViewSingleProjectAdmin = () => {
               <Text>{projectDetails?.project_description}</Text>
             </Flex>
           </Box>
-          <Box>
+          {/* <Box>
             <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
               Amount
             </Text>
             <Flex gap={"8px"} alignItems={"center"}>
               <Text>{projectDetails?.amount}</Text>
             </Flex>
-          </Box>
+          </Box> */}
           <Box>
             <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
               Project Type

@@ -1,4 +1,4 @@
-import { IProject } from "../interface/project.interface";
+import { IInventory, IMiscellaneous, IProject } from "../interface/project.interface";
 import axiosService from "./axios.service";
 
 const createNewProject = (payload: {
@@ -7,11 +7,12 @@ const createNewProject = (payload: {
   renovation_category: string;
   office_area_for_renovation: string;
   project_description: string;
-  amount: string;
+  amount_paid: number;
   images?: string[];
+  inventory?: IInventory[];
+  miscellaneous?: IMiscellaneous[] 
   receipt?: string[];
   state: string;
-  vendor: string;
 }): Promise<IProject> => {
   return axiosService
     .post(`project/create-project`, payload)

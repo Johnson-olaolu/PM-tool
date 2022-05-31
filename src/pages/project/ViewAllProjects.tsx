@@ -96,10 +96,10 @@ const ViewAllProjects = () => {
                       {project.project_description}
                     </Text>
                   </Td>
-                  <Td fontSize={"14px"}>{project.vendor}</Td>
+                  <Td fontSize={"14px"}>{project.paid_amount}</Td>
                   <Td fontSize={"14px"}>{project.receipt.length > 0 ? "Uploaded" : ""}</Td>
                   <Td fontSize={"14px"}>
-                    <NumberFormat value={project.amount} displayType={"text"} thousandSeparator={true} prefix={"₦"} />
+                    {/* <NumberFormat value={project.amount} displayType={"text"} thousandSeparator={true} prefix={"₦"} /> */}
                   </Td>
                   <Td fontSize={"14px"}>{project.status}</Td>
                 </Tr>
@@ -108,7 +108,7 @@ const ViewAllProjects = () => {
           <TableCaption>
             {" "}
             Total Amount :{" "}
-            <NumberFormat value={projects.reduce((a, b) => b.amount + a, 0).toString() } displayType={"text"} thousandSeparator={true} prefix={"₦"} />
+            {/* <NumberFormat value={projects.reduce((a, b) => b.amount + a, 0).toString() } displayType={"text"} thousandSeparator={true} prefix={"₦"} /> */}
           </TableCaption>
         </Table>
       </TableContainer>

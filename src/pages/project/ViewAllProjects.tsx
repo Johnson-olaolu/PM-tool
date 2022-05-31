@@ -7,11 +7,17 @@ import { projectService } from "../../services/project.service";
 import { RootState } from "../../store";
 import NumberFormat from "react-number-format";
 import { FiChevronLeft } from "react-icons/fi";
+import moment from "moment";
 
 const ViewAllProjects = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.user);
   const [projects, setProjects] = useState<IProject[]>([]);
+
+  const [sortDetails, setSortDetails] = useState({
+    ascending: false,
+    title: "",
+  });
   const fetchAllProjects = (state: string) => {
     projectService
       .fetchAllProjects(state)
@@ -25,10 +31,51 @@ const ViewAllProjects = () => {
 
   useEffect(() => {
     fetchAllProjects(user?.state!);
-  }, []);
+  }, [user]);
 
   const navigateToProject = (id: string) => {
     navigate(`/project/${id}`);
+  };
+
+  const sortProjects = (title: string) => {
+    let sortedProjects = projects;
+    switch (title) {
+      case "title":
+        sortedProjects = projects.sort((a, b) => (a.title.toLowerCase() > b.title.toLowerCase() ? 1 : -1));
+        setProjects([...sortedProjects]);
+        break;
+      case "project_description":
+        sortedProjects = projects.sort((a, b) => (a.project_description.toLowerCase() > b.project_description.toLowerCase() ? 1 : -1));
+        setProjects([...sortedProjects]);
+        break;
+      case "invoice":
+        sortedProjects = projects.sort((a, b) => (a.receipt.length > 0 ? 1 : -1));
+        setProjects([...sortedProjects]);
+        break;
+      case "total_amount":
+        sortedProjects = projects.sort(
+          (a, b) =>
+            a.inventory.reduce((inva, invb) => invb.price * invb.amount + inva, 0) -
+            b.inventory.reduce((inva, invb) => invb.price * invb.amount + inva, 0)
+        );
+        setProjects([...sortedProjects]);
+        break;
+      case "paid_amount":
+        sortedProjects = projects.sort((a, b) => a.paid_amount - b.paid_amount);
+        setProjects([...sortedProjects]);
+        break;
+      case "created_at":
+        sortedProjects = projects.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+        setProjects([...sortedProjects]);
+        break;
+      case "status":
+        sortedProjects = projects.sort((a, b) => (a.status > b.status ? 1 : -1));
+        setProjects([...sortedProjects]);
+        break;
+
+      default:
+        break;
+    }
   };
 
   return (
@@ -51,64 +98,100 @@ const ViewAllProjects = () => {
         <Table variant="simple" style={{ borderCollapse: "separate", borderSpacing: "0 12px" }}>
           <Thead>
             <Tr color={"blackAlpha.600"} fontWeight={"medium"} fontSize={"px"}>
-              <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
+              <Th
+                fontSize={"10px"}
+                fontWeight={"medium"}
+                textTransform={"none"}
+                cursor={"pointer"}
+                onClick={() => {
+                  sortProjects("title");
+                }}
+              >
                 Title
               </Th>
-              {/* <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
-                Category
+              <Th
+                fontSize={"10px"}
+                fontWeight={"medium"}
+                textTransform={"none"}
+                cursor={"pointer"}
+                onClick={() => sortProjects("project_description")}
+              >
+                Project Description
               </Th>
-              <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
-                Office area
-              </Th>
-              <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
-                More Information
-              </Th> */}
-              <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
-                Product Description
-              </Th>
-              <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
-                Vendor
-              </Th>
-              <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
+              <Th fontSize={"10px"} fontWeight={"medium"} cursor={"pointer"} textTransform={"none"} onClick={() => sortProjects("invoice")}>
                 Invoice
               </Th>
-              <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
-                Amount
+              <Th fontSize={"10px"} fontWeight={"medium"} cursor={"pointer"} textTransform={"none"} onClick={() => sortProjects("total_amount")}>
+                Total Amount
               </Th>
-              <Th fontSize={"10px"} fontWeight={"medium"} textTransform={"none"}>
+              <Th fontSize={"10px"} fontWeight={"medium"} cursor={"pointer"} textTransform={"none"} onClick={() => sortProjects("paid_amount")}>
+                Paid Amount
+              </Th>
+              <Th fontSize={"10px"} fontWeight={"medium"} cursor={"pointer"} textTransform={"none"} onClick={() => sortProjects("created_at")}>
+                Created At
+              </Th>
+              <Th fontSize={"10px"} fontWeight={"medium"} cursor={"pointer"} textTransform={"none"} onClick={() => sortProjects("status")}>
                 Status
               </Th>
             </Tr>
           </Thead>
           <Tbody>
-            {projects
-              .sort((a, b) => (a.title < b.title ? -1 : 1))
-              .map((project) => (
-                <Tr backgroundColor={"white"} cursor={"pointer "} borderRadius={"4px"} shadow={"sm"} onClick={() => navigateToProject(project._id)}>
-                  <Td fontSize={"14px"} >
-                    <Text maxW={"200px"} overflowX={"hidden"} textOverflow={"ellipsis"} title={project.title}>{project.title}</Text>
-                  </Td>
-                  {/* <Td fontSize={"14px"}>{project.project_type}</Td> */}
-                  {/* <Td fontSize={"14px"}>{project.office_area_for_renovation}</Td> */}
-                  {/* <Td fontSize={"14px"}>{project.renovation_category}</Td> */}
-                  <Td fontSize={"14px"}>
-                    <Text maxW={"400px"} overflowX={"hidden"} textOverflow={"ellipsis"} title={project.project_description}>
-                      {project.project_description}
-                    </Text>
-                  </Td>
-                  <Td fontSize={"14px"}>{project.paid_amount}</Td>
-                  <Td fontSize={"14px"}>{project.receipt.length > 0 ? "Uploaded" : ""}</Td>
-                  <Td fontSize={"14px"}>
-                    {/* <NumberFormat value={project.amount} displayType={"text"} thousandSeparator={true} prefix={"₦"} /> */}
-                  </Td>
-                  <Td fontSize={"14px"}>{project.status}</Td>
-                </Tr>
-              ))}
+            {projects.map((project) => (
+              <Tr backgroundColor={"white"} cursor={"pointer "} borderRadius={"4px"} shadow={"sm"} onClick={() => navigateToProject(project._id)}>
+                <Td fontSize={"14px"}>
+                  <Text maxW={"200px"} overflowX={"hidden"} textOverflow={"ellipsis"} title={project.title}>
+                    {project.title}
+                  </Text>
+                </Td>
+                <Td fontSize={"14px"}>
+                  <Text maxW={"400px"} overflowX={"hidden"} textOverflow={"ellipsis"} title={project.project_description}>
+                    {project.project_description}
+                  </Text>
+                </Td>
+                <Td>
+                {project.receipt.length > 0 ? "Uploaded" : "Not-uploaded"}
+                </Td>
+                <Td fontSize={"14px"}>
+                  <NumberFormat
+                    value={
+                      project.inventory.reduce((ainv, binv) => binv.price * binv.amount + ainv, 0) +
+                      project.miscellaneous.reduce((amisc, bmisc) => bmisc.price + amisc, 0)
+                    }
+                    displayType={"text"}
+                    thousandSeparator={true}
+                    prefix={"₦"}
+                  />
+                </Td>
+                <Td fontSize={"14px"}>{project.paid_amount}</Td>
+                <Td fontSize={"14px"}>{moment(project.createdAt).format("DD/MM/YYYY")}</Td>
+                <Td fontSize={"14px"}>{project.status}</Td>
+              </Tr>
+            ))}
           </Tbody>
           <TableCaption>
-            {" "}
-            Total Amount :{" "}
-            {/* <NumberFormat value={projects.reduce((a, b) => b.amount + a, 0).toString() } displayType={"text"} thousandSeparator={true} prefix={"₦"} /> */}
+            Total Cost :{" "}
+            <NumberFormat
+              value={projects
+                .reduce(
+                  (a, b) =>
+                    b.inventory.reduce((ainv, binv) => binv.price * binv.amount + ainv, 0) +
+                    b.miscellaneous.reduce((amisc, bmisc) => bmisc.price + amisc, 0) +
+                    a,
+                  0
+                )
+                .toString()}
+              displayType={"text"}
+              thousandSeparator={true}
+              prefix={"₦"}
+            />
+            <br />
+            Total Paid :{" "}
+            <NumberFormat
+              value={projects.reduce((a, b) => b.paid_amount + a, 0).toString()}
+              displayType={"text"}
+              thousandSeparator={true}
+              prefix={"₦"}
+            />
           </TableCaption>
         </Table>
       </TableContainer>

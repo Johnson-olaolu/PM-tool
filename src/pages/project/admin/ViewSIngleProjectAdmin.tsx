@@ -11,7 +11,13 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
+  Table,
+  TableCaption,
+  TableContainer,
+  Td,
   Text,
+  Tr,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
@@ -23,6 +29,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import ApproveProject from "./components/ApproveProject";
 import RejectProject from "./components/RejectProject";
+import NumberFormat from "react-number-format";
 
 const ViewSingleProjectAdmin = () => {
   const navigate = useNavigate();
@@ -32,7 +39,7 @@ const ViewSingleProjectAdmin = () => {
   const [approveModalOpn, setApproveModalOpn] = useState(false);
   const [rejectModalOpen, setRejectModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  const toast = useToast()
   const fetchSingleProject = () => {
     projectService
       .fetchSingleProject(projectId!)
@@ -52,6 +59,13 @@ const ViewSingleProjectAdmin = () => {
       .approveProject(projectId!)
       .then((res) => {
         setIsLoading(false);
+        toast({
+          title: 'Project Approved.',
+          description: "You have approved this project",
+          status: 'success',
+          duration: 9000,
+          isClosable: true,
+        })
         navigate("/project/admin/all");
       })
       .catch((err) => {
@@ -63,6 +77,13 @@ const ViewSingleProjectAdmin = () => {
     projectService
       .rejectProject(projectId!, comment)
       .then((res) => {
+        toast({
+          title: 'Project Reject',
+          description: "You have rejected this project",
+          status: 'warning',
+          duration: 9000,
+          isClosable: true,
+        })
         navigate("/project/admin/all");
       })
       .catch((err) => {
@@ -88,7 +109,7 @@ const ViewSingleProjectAdmin = () => {
           </Flex>
         </Flex>
         <VStack spacing={"16px"} justify={"start"} align={"start"}>
-          <Box>
+        <Box>
             <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
               Project Description
             </Text>
@@ -96,14 +117,7 @@ const ViewSingleProjectAdmin = () => {
               <Text>{projectDetails?.project_description}</Text>
             </Flex>
           </Box>
-          {/* <Box>
-            <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
-              Amount
-            </Text>
-            <Flex gap={"8px"} alignItems={"center"}>
-              <Text>{projectDetails?.amount}</Text>
-            </Flex>
-          </Box> */}
+
           <Box>
             <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
               Project Type
@@ -112,6 +126,7 @@ const ViewSingleProjectAdmin = () => {
               <Text>{projectDetails?.project_type}</Text>
             </Flex>
           </Box>
+
           <Box>
             <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
               Renovation Category
@@ -120,6 +135,7 @@ const ViewSingleProjectAdmin = () => {
               <Text>{projectDetails?.renovation_category}</Text>
             </Flex>
           </Box>
+
           <Box>
             <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
               Office Area for Renovation
@@ -128,6 +144,93 @@ const ViewSingleProjectAdmin = () => {
               <Text>{projectDetails?.office_area_for_renovation}</Text>
             </Flex>
           </Box>
+
+          <Box>
+            <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
+              Inventory
+            </Text>
+            <Flex gap={"8px"} alignItems={"center"}>
+              <TableContainer>
+                <Table variant="simple" style={{ borderCollapse: "separate", borderSpacing: "0 12px" }}>
+                  {projectDetails?.inventory.map((inv) => (
+                    <Tr backgroundColor={"white"} cursor={"pointer "} borderRadius={"4px"} shadow={"sm"}>
+                      <Td fontSize={"12px"}>
+                        Name: <strong>{inv.name}</strong>
+                      </Td>
+                      <Td fontSize={"12px"}>
+                        Amount: <strong>{inv.amount}</strong>
+                      </Td>
+                      <Td fontSize={"12px"}>
+                        Price:{" "}
+                        <strong>
+                          <NumberFormat value={inv.price} thousandSeparator={true} prefix={"₦"} displayType={"text"} />
+                        </strong>
+                      </Td>
+                      <Td fontSize={"12px"}>
+                        Vendor: <strong> {inv.vendor} </strong>
+                      </Td>
+                    </Tr>
+                  ))}
+                  <TableCaption fontSize={"12px"} textAlign={"left"} padding={0} margin ={0}>
+                    Total Amount :{" "}
+                    <NumberFormat
+                      value={projectDetails?.inventory.reduce((a, b) => b.amount * b.price + a, 0).toString()}
+                      displayType={"text"}
+                      thousandSeparator={true}
+                      prefix={"₦"}
+                    />
+                  </TableCaption>
+                </Table>
+              </TableContainer>
+            </Flex>
+          </Box>
+
+          <Box>
+            <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
+              Miscellaneous
+            </Text>
+            <Flex gap={"8px"} alignItems={"center"}>
+              <TableContainer>
+                <Table variant="simple" style={{ borderCollapse: "separate", borderSpacing: "0 12px" }}>
+                  {projectDetails?.miscellaneous.map((misc) => (
+                    <Tr backgroundColor={"white"} cursor={"pointer "} borderRadius={"4px"} shadow={"sm"}>
+                      <Td fontSize={"12px"}>
+                        Name: <strong>{misc.name}</strong>
+                      </Td>
+                      <Td fontSize={"12px"}>
+                        Price:{" "}
+                        <strong>
+                          {" "}
+                          <NumberFormat value={misc.price} thousandSeparator={true} prefix={"₦"} displayType={"text"} />
+                        </strong>
+                      </Td>
+                    </Tr>
+                  ))}
+                  <TableCaption fontSize={"12px"} textAlign={"left"} padding={0} margin={0}>
+                    Total Amount :{" "}
+                    <NumberFormat
+                      value={projectDetails?.miscellaneous.reduce((a, b) => b.price + a, 0).toString()}
+                      displayType={"text"}
+                      thousandSeparator={true}
+                      prefix={"₦"}
+                    />
+                  </TableCaption>
+                </Table>
+              </TableContainer>
+            </Flex>
+          </Box>
+
+          <Box>
+            <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
+              Paid Amount
+            </Text>
+            <Flex gap={"8px"} alignItems={"center"}>
+              <Text>
+                <NumberFormat value={projectDetails?.paid_amount} displayType={"text"} thousandSeparator={true} prefix={"₦"} />
+              </Text>
+            </Flex>
+          </Box>
+
           <Box>
             <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
               Images
@@ -140,6 +243,7 @@ const ViewSingleProjectAdmin = () => {
               </Stack>
             </Flex>
           </Box>
+
           <Box>
             <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
               Reciepts
@@ -152,6 +256,8 @@ const ViewSingleProjectAdmin = () => {
               </Stack>
             </Flex>
           </Box>
+
+
           <Flex paddingTop={"40px"} gap={"40px"}>
             <Button
               padding={"12px 40px"}
@@ -222,6 +328,7 @@ const ViewSingleProjectAdmin = () => {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Reject Project {projectDetails?.title}</ModalHeader>
+          <ModalCloseButton />
           <ModalBody>
             <RejectProject rejectProject={rejectProject} closeModal={() => setRejectModalOpen(false)} />
           </ModalBody>

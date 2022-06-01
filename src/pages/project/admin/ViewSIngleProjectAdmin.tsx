@@ -165,7 +165,7 @@ const ViewSingleProjectAdmin = () => {
                   {projectDetails?.inventory.map((inv) => (
                     <Tr backgroundColor={"white"} cursor={"pointer "} borderRadius={"4px"} shadow={"sm"}>
                       <Td fontSize={"12px"}>
-                        Name: <strong>{inv.inventory.name}</strong>
+                        Name: <strong>{inv.inventory?.name}</strong>
                       </Td>
                       <Td fontSize={"12px"}>
                         Amount: <strong>{inv.amount}</strong>
@@ -173,18 +173,18 @@ const ViewSingleProjectAdmin = () => {
                       <Td fontSize={"12px"}>
                         Price:{" "}
                         <strong>
-                          <NumberFormat value={inv.inventory.price} thousandSeparator={true} prefix={"₦"} displayType={"text"} />
+                          <NumberFormat value={inv.inventory?.price} thousandSeparator={true} prefix={"₦"} displayType={"text"} />
                         </strong>
                       </Td>
                       <Td fontSize={"12px"}>
-                        Vendor: <strong> {inv.inventory.vendor} </strong>
+                        Vendor: <strong> {inv.inventory?.vendor} </strong>
                       </Td>
                     </Tr>
                   ))}
                   <TableCaption fontSize={"12px"} textAlign={"left"} padding={0} margin ={0}>
                     Total Amount :{" "}
                     <NumberFormat
-                      value={projectDetails?.inventory.reduce((a, b) => b.amount * b.inventory.price + a, 0).toString()}
+                      value={projectDetails?.inventory.reduce((a, b) => b.amount * b.inventory?.price + a, 0).toString()}
                       displayType={"text"}
                       thousandSeparator={true}
                       prefix={"₦"}

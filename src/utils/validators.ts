@@ -6,7 +6,7 @@ export const loginValidator = yup.object().shape({
 })
 
 export const createProjectValidatorSchema = yup.object().shape({
-    title: yup.string().required("Please enter title"),
+    title_id: yup.string().required("Please Select title"),
     project_description: yup.string().required("Please enter a project description"),
     project_type: yup.string().required("Please enter project type"),
     renovation_category: yup.string().required("Please select a category"),
@@ -21,7 +21,7 @@ export const createProjectValidatorSchema = yup.object().shape({
 
 
 export const createInventoryValidatorSchema = yup.object().shape({
-    inventoryId : yup.string().required("Please select an inventory"),
+    inventory_id : yup.string().required("Please select an inventory"),
     amount : yup.number().min(1, "Amount must me more than 0").required("Amount paid must be more than 10"),
 })
 

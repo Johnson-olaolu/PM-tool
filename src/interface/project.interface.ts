@@ -12,9 +12,10 @@ export interface IProject {
   miscellaneous : IMiscellaneous[]
   renovation_category: string;
   state: string;
+  start_date: Date;
   state_coordinator: string;
   status: string;
-  title: string;
+  title: Ititle;
   updatedAt: Date;
   __v: 0;
   _id: string;

@@ -13,7 +13,6 @@ const ViewAllProjects = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.user);
   const [projects, setProjects] = useState<IProject[]>([]);
-
   const [sortDetails, setSortDetails] = useState({
     ascending: false,
     title: "",
@@ -41,7 +40,7 @@ const ViewAllProjects = () => {
     let sortedProjects = projects;
     switch (title) {
       case "title":
-        sortedProjects = projects.sort((a, b) => (a.title.toLowerCase() > b.title.toLowerCase() ? 1 : -1));
+        sortedProjects = projects.sort((a, b) => (a.title.title.toLowerCase() > b.title.title.toLowerCase() ? 1 : -1));
         setProjects([...sortedProjects]);
         break;
       case "project_description":
@@ -64,8 +63,8 @@ const ViewAllProjects = () => {
         sortedProjects = projects.sort((a, b) => a.paid_amount - b.paid_amount);
         setProjects([...sortedProjects]);
         break;
-      case "created_at":
-        sortedProjects = projects.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+      case "start_date":
+        sortedProjects = projects.sort((a, b) => a.start_date.getTime() - b.start_date.getTime());
         setProjects([...sortedProjects]);
         break;
       case "status":
@@ -127,8 +126,8 @@ const ViewAllProjects = () => {
               <Th fontSize={"10px"} fontWeight={"medium"} cursor={"pointer"} textTransform={"none"} onClick={() => sortProjects("paid_amount")}>
                 Paid Amount
               </Th>
-              <Th fontSize={"10px"} fontWeight={"medium"} cursor={"pointer"} textTransform={"none"} onClick={() => sortProjects("created_at")}>
-                Created At
+              <Th fontSize={"10px"} fontWeight={"medium"} cursor={"pointer"} textTransform={"none"} onClick={() => sortProjects("start_date")}>
+                 Start Date
               </Th>
               <Th fontSize={"10px"} fontWeight={"medium"} cursor={"pointer"} textTransform={"none"} onClick={() => sortProjects("status")}>
                 Status
@@ -139,8 +138,8 @@ const ViewAllProjects = () => {
             {projects.map((project) => (
               <Tr backgroundColor={"white"} cursor={"pointer "} borderRadius={"4px"} shadow={"sm"} onClick={() => navigateToProject(project._id)}>
                 <Td fontSize={"14px"}>
-                  <Text maxW={"200px"} overflowX={"hidden"} textOverflow={"ellipsis"} title={project.title}>
-                    {project.title}
+                  <Text maxW={"200px"} overflowX={"hidden"} textOverflow={"ellipsis"} title={project.title.title}>
+                    {project.title.title}
                   </Text>
                 </Td>
                 <Td fontSize={"14px"}>
@@ -163,7 +162,7 @@ const ViewAllProjects = () => {
                   />
                 </Td>
                 <Td fontSize={"14px"}>{project.paid_amount}</Td>
-                <Td fontSize={"14px"}>{moment(project.createdAt).format("DD/MM/YYYY")}</Td>
+                <Td fontSize={"14px"}>{moment(project.start_date).format("DD/MM/YYYY")}</Td>
                 <Td fontSize={"14px"}>{project.status}</Td>
               </Tr>
             ))}

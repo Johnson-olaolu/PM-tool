@@ -40,7 +40,7 @@ const ViewAllProjectsAdmin = () => {
     let sortedProjects = filteredProjects;
     switch (title) {
       case "title":
-        sortedProjects = filteredProjects.sort((a, b) => (a.title.toLowerCase() > b.title.toLowerCase() ? 1 : -1));
+        sortedProjects = filteredProjects.sort((a, b) => (a.title.title.toLowerCase() > b.title.title.toLowerCase() ? 1 : -1));
         setFilteredProjects([...sortedProjects]);
         break;
       case "project_description":
@@ -162,8 +162,8 @@ const ViewAllProjectsAdmin = () => {
             {filteredProjects.map((project) => (
               <Tr backgroundColor={"white"} cursor={"pointer "} borderRadius={"4px"} shadow={"sm"} onClick={() => adminNavigateToProject(project._id)}>
                 <Td fontSize={"14px"}>
-                  <Text maxW={"200px"} overflowX={"hidden"} textOverflow={"ellipsis"} title={project.title}>
-                    {project.title}
+                  <Text maxW={"200px"} overflowX={"hidden"} textOverflow={"ellipsis"} title={project.title.title}>
+                    {project.title.title}
                   </Text>
                 </Td>
                 <Td fontSize={"14px"}>

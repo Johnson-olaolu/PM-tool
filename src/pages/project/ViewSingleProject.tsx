@@ -29,6 +29,7 @@ import UpdateProject from "./components/UpdateProject";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import NumberFormat from "react-number-format";
+import moment from "moment";
 
 const ViewSingleProject = () => {
   const navigate = useNavigate();
@@ -69,7 +70,7 @@ const ViewSingleProject = () => {
               cursor={"pointer"}
             />
             <Text color={"blackAlpha.800"} fontWeight={"medium"} textTransform={"capitalize"}>
-              {projectDetails?.title}
+              {projectDetails?.title.title}
             </Text>
           </Flex>
         </Flex>
@@ -140,6 +141,24 @@ const ViewSingleProject = () => {
                 _focus={{ boxShadow: "none" }}
                 height={"auto"}
                 onClick={() => openModal("office_area_for_renovation")}
+              >
+                {<FiEdit fontSize={"16px"} />}
+              </Button>
+            </Flex>
+          </Box>
+
+          <Box>
+            <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
+              Start Date
+            </Text>
+            <Flex gap={"8px"} alignItems={"center"}>
+              <Text>{moment(projectDetails?.start_date).format("DD/MM/YYYY") }</Text>
+              <Button
+                variant={"link"}
+                color={"moneypoint-blue"}
+                _focus={{ boxShadow: "none" }}
+                height={"auto"}
+                onClick={() => openModal("start_date")}
               >
                 {<FiEdit fontSize={"16px"} />}
               </Button>

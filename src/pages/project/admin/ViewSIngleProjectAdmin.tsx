@@ -30,6 +30,7 @@ import { RootState } from "../../../store";
 import ApproveProject from "./components/ApproveProject";
 import RejectProject from "./components/RejectProject";
 import NumberFormat from "react-number-format";
+import moment from "moment";
 
 const ViewSingleProjectAdmin = () => {
   const navigate = useNavigate();
@@ -104,7 +105,7 @@ const ViewSingleProjectAdmin = () => {
               cursor={"pointer"}
             />
             <Text color={"blackAlpha.800"} fontWeight={"medium"} textTransform={"capitalize"}>
-              {projectDetails?.title}
+              {projectDetails?.title.title}
             </Text>
           </Flex>
         </Flex>
@@ -142,6 +143,15 @@ const ViewSingleProjectAdmin = () => {
             </Text>
             <Flex gap={"8px"} alignItems={"center"}>
               <Text>{projectDetails?.office_area_for_renovation}</Text>
+            </Flex>
+          </Box>
+
+          <Box>
+            <Text as={"span"} fontSize={"12px"} color={"blackAlpha.600"} marginBottom={"4px"}>
+              Start Date
+            </Text>
+            <Flex gap={"8px"} alignItems={"center"}>
+              <Text>{moment(projectDetails?.start_date).format("DD/MM/YYYY") }</Text>
             </Flex>
           </Box>
 
@@ -295,7 +305,7 @@ const ViewSingleProjectAdmin = () => {
           <ModalHeader></ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text>Approve project {projectDetails?.title}</Text>
+            <Text>Approve project {projectDetails?.title.title}</Text>
           </ModalBody>
           <ModalFooter>
             <Flex justifyContent={"space-between"} width={"100%"}>
@@ -327,7 +337,7 @@ const ViewSingleProjectAdmin = () => {
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Reject Project {projectDetails?.title}</ModalHeader>
+          <ModalHeader>Reject Project {projectDetails?.title.title}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <RejectProject rejectProject={rejectProject} closeModal={() => setRejectModalOpen(false)} />

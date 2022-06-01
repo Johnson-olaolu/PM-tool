@@ -2,14 +2,15 @@ import { IInventory, IMiscellaneous, IProject } from "../interface/project.inter
 import axiosService from "./axios.service";
 
 const createNewProject = (payload: {
-  title: string;
+  title_id: string;
   project_type: string;
   renovation_category: string;
   office_area_for_renovation: string;
   project_description: string;
   amount_paid: number;
+  start_date: Date | null;
   images?: string[];
-  inventory?: { inventoryId: string; amount: number }[];
+  inventory?: { inventory_id: string; amount: number }[];
   miscellaneous?: IMiscellaneous[];
   receipt?: string[];
   state: string;
